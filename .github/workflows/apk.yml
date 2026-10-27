@@ -1,0 +1,46 @@
+name: APK bauen
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.8
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+      - run: flutter build apk --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lernapp-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+      # Jede neue Version auf main bzw. dem Entwicklungszweig landet als
+      # "Testversion" unter Releases, dort kann man die APK direkt am Handy laden.
+      - name: Testversion veröffentlichen
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ZWEIG: ${{ github.ref_name }}
+        run: |
+          TAG="testversion-$(echo "$ZWEIG" | tr '/' '-')"
+          cp build/app/outputs/flutter-apk/app-release.apk Lernapp.apk
+          gh release delete "$TAG" --yes --cleanup-tag || true
+          gh release create "$TAG" Lernapp.apk --prerelease --target "$GITHUB_SHA" \
+            --title "Lernapp Testversion ($ZWEIG)" \
+            --notes "Automatisch gebaut aus $GITHUB_SHA. Lernapp.apk am Android-Handy herunterladen und öffnen."

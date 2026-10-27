@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print
 // Erzeugt ein Beispiel-Leseblatt ohne App:
 //   dart run tool/beispiel.dart a,e,i,o,u,l,s,m,r ausgabe.pdf [ohne-kuerzel,...]
 import 'dart:io';

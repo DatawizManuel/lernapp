@@ -128,6 +128,9 @@ class _KeinProfil extends StatelessWidget {
   }
 }
 
+const _buchstabenHinweis =
+    'Antippen zum Auswählen. Die Auswahl gilt für alle Übungen (Lesen und Schreiben).';
+
 /// Auswahl der Buchstaben als Chips (Aa, Bb, …).
 class _BuchstabenWahl extends StatelessWidget {
   const _BuchstabenWahl({required this.auswahl, required this.aendern});
@@ -257,19 +260,19 @@ class _NeuesSchreibblattState extends State<_NeuesSchreibblatt> with _Erstellen 
 
   Future<GespeichertesBlatt> _speichern() async {
     final (schrift, fett) = await _schriften();
-    final pdf = await erstelleSchreibPdf(p.schreibBuchstaben, p.schreibForm, schrift, fett);
+    final pdf = await erstelleSchreibPdf(p.buchstaben, p.schreibForm, schrift, fett);
     return widget.daten.speichereBlatt(
       p,
       BlattArt.schreiben,
       pdf,
-      buchstaben: sortiereBuchstaben(p.schreibBuchstaben),
+      buchstaben: sortiereBuchstaben(p.buchstaben),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
-    final zeilen = schreibZeilen(p.schreibBuchstaben, p.schreibForm).length;
+    final zeilen = schreibZeilen(p.buchstaben, p.schreibForm).length;
     final seiten = (zeilen / schreibZeilenProSeite).ceil();
 
     return Column(
@@ -278,20 +281,13 @@ class _NeuesSchreibblattState extends State<_NeuesSchreibblatt> with _Erstellen 
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              Text('Welche Buchstaben soll ${p.name} schreiben üben?', style: text.titleMedium),
+              Text('Welche Buchstaben kann ${p.name} schon?', style: text.titleMedium),
+              const SizedBox(height: 4),
+              const Text(_buchstabenHinweis),
               const SizedBox(height: 12),
-              if (p.buchstaben.isNotEmpty && p.schreibBuchstaben.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: OutlinedButton.icon(
-                    icon: const Icon(Icons.content_copy_outlined),
-                    label: const Text('Buchstaben vom Leseblatt übernehmen'),
-                    onPressed: () => _aendern(() => p.schreibBuchstaben = [...p.buchstaben]),
-                  ),
-                ),
               _BuchstabenWahl(
-                auswahl: p.schreibBuchstaben,
-                aendern: (neu) => _aendern(() => p.schreibBuchstaben = neu),
+                auswahl: p.buchstaben,
+                aendern: (neu) => _aendern(() => p.buchstaben = neu),
               ),
               const Divider(height: 32),
               Text('Groß- oder Kleinbuchstaben?', style: text.titleMedium),
@@ -383,7 +379,7 @@ class _NeuesLeseblattState extends State<_NeuesLeseblatt> with _Erstellen {
             children: [
               Text('Welche Buchstaben kann ${p.name} schon?', style: text.titleMedium),
               const SizedBox(height: 4),
-              const Text('Antippen zum Auswählen. Gilt für groß und klein.'),
+              const Text(_buchstabenHinweis),
               const SizedBox(height: 12),
               _BuchstabenWahl(
                 auswahl: p.buchstaben,

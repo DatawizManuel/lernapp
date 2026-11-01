@@ -17,11 +17,9 @@ class Profil {
     List<String>? buchstaben,
     List<String>? ohne,
     this.freiOhne = '',
-    List<String>? schreibBuchstaben,
     this.schreibForm = SchreibForm.beide,
   }) : buchstaben = buchstaben ?? [],
-       ohne = ohne ?? [],
-       schreibBuchstaben = schreibBuchstaben ?? [];
+       ohne = ohne ?? [];
 
   factory Profil.fromJson(Map<String, dynamic> j) => Profil(
     id: j['id'] as String,
@@ -29,7 +27,6 @@ class Profil {
     buchstaben: List<String>.from(j['buchstaben'] as List? ?? []),
     ohne: List<String>.from(j['ohne'] as List? ?? []),
     freiOhne: j['freiOhne'] as String? ?? '',
-    schreibBuchstaben: List<String>.from(j['schreibBuchstaben'] as List? ?? []),
     schreibForm: SchreibForm.values.asNameMap()[j['schreibForm']] ?? SchreibForm.beide,
   );
 
@@ -37,6 +34,7 @@ class Profil {
   String name;
 
   /// Gelernte Buchstaben, klein geschrieben (gilt für groß und klein).
+  /// Eine Auswahl pro Kind, sie gilt für alle Übungen.
   List<String> buchstaben;
 
   /// Kürzel der ausgeschlossenen Kombinationen (siehe [ausschluesse]).
@@ -45,8 +43,7 @@ class Profil {
   /// Weitere auszuschließende Buchstabenfolgen, z. B. "ll, rr".
   String freiOhne;
 
-  /// Buchstaben für das Schreibblatt (klein geschrieben).
-  List<String> schreibBuchstaben;
+  /// Groß- und/oder Kleinbuchstaben auf dem Schreibblatt.
   SchreibForm schreibForm;
 
   Map<String, dynamic> toJson() => {
@@ -55,7 +52,6 @@ class Profil {
     'buchstaben': buchstaben,
     'ohne': ohne,
     'freiOhne': freiOhne,
-    'schreibBuchstaben': schreibBuchstaben,
     'schreibForm': schreibForm.name,
   };
 }

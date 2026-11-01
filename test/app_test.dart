@@ -46,7 +46,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Schreibblätter'));
     await tester.pumpAndSettle();
-    expect(find.text('Welche Buchstaben soll Max schreiben üben?'), findsOneWidget);
+    expect(find.text('Welche Buchstaben kann Max schon?'), findsOneWidget);
 
     final knopf = find.widgetWithText(FilledButton, 'Schreibblatt erstellen');
     expect(tester.widget<FilledButton>(knopf).onPressed, isNull);
@@ -54,6 +54,13 @@ void main() {
     await tester.pump();
     expect(tester.widget<FilledButton>(knopf).onPressed, isNotNull);
     expect(find.text('1 Seite mit je 8 Zeilen'), findsOneWidget);
-    expect(daten.aktivesProfil!.schreibBuchstaben, ['m']);
+    expect(daten.aktivesProfil!.buchstaben, ['m']);
+
+    // Dieselbe Auswahl gilt auch für die Leseblätter.
+    tester.state<NavigatorState>(find.byType(Navigator)).pop();
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Leseblätter'));
+    await tester.pumpAndSettle();
+    expect(tester.widget<FilterChip>(find.widgetWithText(FilterChip, 'Mm')).selected, isTrue);
   });
 }

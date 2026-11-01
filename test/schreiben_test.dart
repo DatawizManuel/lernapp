@@ -43,19 +43,19 @@ void main() {
     expect(RegExp(r'/Type\s*/Page[^s]').allMatches(String.fromCharCodes(pdf)).length, 8);
   });
 
-  test('Schreib-Auswahl und Blatt-Art werden gespeichert', () async {
+  test('Buchstaben, Schreib-Form und Blatt-Art werden gespeichert', () async {
     final ordner = await Directory.systemTemp.createTemp('lernapp');
     addTearDown(() => ordner.delete(recursive: true));
     final daten = await AppDaten.laden(ordner);
     final p = await daten.neuesProfil('Max');
-    p.schreibBuchstaben = ['a', 'm'];
+    p.buchstaben = ['a', 'm'];
     p.schreibForm = SchreibForm.klein;
     await daten.profilGeaendert();
     await daten.speichereBlatt(p, BlattArt.schreiben, Uint8List(3), buchstaben: ['a', 'm']);
 
     final neu = await AppDaten.laden(ordner);
     final q = neu.aktivesProfil!;
-    expect(q.schreibBuchstaben, ['a', 'm']);
+    expect(q.buchstaben, ['a', 'm']);
     expect(q.schreibForm, SchreibForm.klein);
     expect(neu.blaetterVon(q, BlattArt.schreiben), hasLength(1));
     expect(neu.blaetterVon(q, BlattArt.lesen), isEmpty);
@@ -68,7 +68,6 @@ void main() {
       'name': 'Lena',
       'buchstaben': ['a'],
     });
-    expect(p.schreibBuchstaben, isEmpty);
     expect(p.schreibForm, SchreibForm.beide);
     final b = GespeichertesBlatt.fromJson({
       'datei': 'x.pdf',

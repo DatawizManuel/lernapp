@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../daten/speicher.dart';
-import 'leseblaetter.dart';
+import 'blaetter.dart';
 import 'start.dart';
 
 class DeutschSeite extends StatelessWidget {
@@ -20,8 +20,22 @@ class DeutschSeite extends StatelessWidget {
             titel: 'Leseblätter',
             untertitel: 'Silben und Wörter aus den Buchstaben, die dein Kind schon kann',
             icon: Icons.auto_stories_outlined,
-            onTap: () => Navigator.of(context)
-                .push(MaterialPageRoute(builder: (_) => LeseblaetterSeite(daten: daten))),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => BlattSeite(daten: daten, art: BlattArt.lesen),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          MenuePunkt(
+            titel: 'Schreibblätter',
+            untertitel: 'Buchstaben nachfahren und schreiben üben, mit Hilfslinien',
+            icon: Icons.edit_outlined,
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => BlattSeite(daten: daten, art: BlattArt.schreiben),
+              ),
+            ),
           ),
         ],
       ),

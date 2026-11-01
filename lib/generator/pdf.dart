@@ -1,5 +1,5 @@
 /// Zeichnet ein Leseblatt als A4-PDF im kindgerechten Design:
-/// Andika-Schrift, Silbenbögen, Sterne zum Anmalen, Name/Datum-Feld und
+/// Lernapp-Schrift (Andika mit Schul-l), Silbenbögen, Sterne zum Anmalen, Name/Datum-Feld und
 /// bunte Kacheln mit den gelernten Buchstaben.
 library;
 
@@ -10,9 +10,9 @@ import 'package:pdf/pdf.dart';
 
 import 'inhalt.dart';
 
-const _mm = PdfPageFormat.mm;
+const mm = PdfPageFormat.mm;
 
-class _Farben {
+class BlattFarben {
   static final text = PdfColor.fromHex('#2B2D42');
   static final bogen = PdfColor.fromHex('#E76F51');
   static final silbenBand = PdfColor.fromHex('#E3F2FD');
@@ -27,8 +27,8 @@ class _Farben {
   ].map(PdfColor.fromHex).toList();
 }
 
-class _Zeichner {
-  _Zeichner(this.g, this.normal, this.fett);
+class Zeichner {
+  Zeichner(this.g, this.normal, this.fett);
 
   final PdfGraphics g;
   final PdfFont normal;
@@ -42,9 +42,14 @@ class _Zeichner {
     g.drawString(istFett ? fett : normal, groesse, s, x, y);
   }
 
-  void textMitte(String s, double cx, double y, double groesse, PdfColor farbe,
-          {bool istFett = false}) =>
-      text(s, cx - breite(s, groesse, istFett: istFett) / 2, y, groesse, farbe, istFett: istFett);
+  void textMitte(
+    String s,
+    double cx,
+    double y,
+    double groesse,
+    PdfColor farbe, {
+    bool istFett = false,
+  }) => text(s, cx - breite(s, groesse, istFett: istFett) / 2, y, groesse, farbe, istFett: istFett);
 
   void textRechts(String s, double x, double y, double groesse, PdfColor farbe) =>
       text(s, x - breite(s, groesse), y, groesse, farbe);
@@ -86,9 +91,9 @@ class _Zeichner {
   void wortMitBoegen(String eintrag, double cx, double grundlinie, double groesse) {
     final silben = eintrag.split('-');
     var x = cx - breite(silben.join(), groesse) / 2;
-    text(silben.join(), x, grundlinie, groesse, _Farben.text);
+    text(silben.join(), x, grundlinie, groesse, BlattFarben.text);
 
-    g.setStrokeColor(_Farben.bogen);
+    g.setStrokeColor(BlattFarben.bogen);
     g.setLineWidth(1.4);
     final tiefe = groesse * 0.28;
     final oben = grundlinie - groesse * 0.12;
@@ -101,52 +106,73 @@ class _Zeichner {
   }
 }
 
-String _kachelText(String b) => b == 'ß' ? 'ß' : b.toUpperCase() + b;
+String kachelText(String b) => b == 'ß' ? 'ß' : b.toUpperCase() + b;
 
-/// Kopfbereich zeichnen; gibt die y-Position darunter zurück.
-double _kopf(_Zeichner z, List<String> buchstaben, double breite, double hoehe, double rand) {
+/// Kopfbereich (Titel, Name/Datum, Buchstabenkacheln) zeichnen; gibt die y-Position darunter zurück.
+double zeichneKopf(
+  Zeichner z,
+  List<String> buchstaben,
+  double breite,
+  double hoehe,
+  double rand, {
+  String titel = 'Mein Leseblatt',
+  String label = 'Diese Buchstaben kann ich schon:',
+  String hinweis = 'Lies jede Reihe laut vor. Geschafft? Dann male den Stern an!',
+}) {
   final oben = hoehe - rand;
-  z.text('Mein Leseblatt', rand, oben - 24, 26, _Farben.text, istFett: true);
+  z.text(titel, rand, oben - 24, 26, BlattFarben.text, istFett: true);
 
   // Name / Datum
-  z.g.setStrokeColor(_Farben.linie);
+  z.g.setStrokeColor(BlattFarben.linie);
   z.g.setLineWidth(0.8);
-  final x0 = breite - rand - 85 * _mm;
-  z.text('Name:', x0, oben - 10, 12, _Farben.text);
-  z.linie(x0 + 14 * _mm, oben - 12, breite - rand, oben - 12);
-  z.text('Datum:', x0, oben - 28, 12, _Farben.text);
-  z.linie(x0 + 14 * _mm, oben - 30, breite - rand, oben - 30);
+  final x0 = breite - rand - 85 * mm;
+  z.text('Name:', x0, oben - 10, 12, BlattFarben.text);
+  z.linie(x0 + 14 * mm, oben - 12, breite - rand, oben - 12);
+  z.text('Datum:', x0, oben - 28, 12, BlattFarben.text);
+  z.linie(x0 + 14 * mm, oben - 30, breite - rand, oben - 30);
 
   // gelernte Buchstaben als bunte Kacheln, bei vielen Buchstaben umgebrochen
   var y = oben - 58;
-  const label = 'Diese Buchstaben kann ich schon:';
-  z.text(label, rand, y + 6, 13, _Farben.text);
-  final xStart = rand + z.breite(label, 13) + 4 * _mm;
-  const kachel = 10.5 * _mm, abstand = 1.6 * _mm;
+  z.text(label, rand, y + 6, 13, BlattFarben.text);
+  final xStart = rand + z.breite(label, 13) + 4 * mm;
+  const kachel = 10.5 * mm, abstand = 1.6 * mm;
   var x = xStart;
   for (var i = 0; i < buchstaben.length; i++) {
     if (x + kachel > breite - rand) {
       x = xStart;
-      y -= kachel * 0.82 + 2 * _mm;
+      y -= kachel * 0.82 + 2 * mm;
     }
-    final farbe = i % _Farben.kacheln.length;
-    z.rundesRechteck(x, y - 3, kachel, kachel * 0.82, 4, _Farben.kacheln[farbe]);
-    z.textMitte(_kachelText(buchstaben[i]), x + kachel / 2, y + 3, 15,
-        farbe == 2 ? _Farben.text : _Farben.weiss,
-        istFett: true);
+    final farbe = i % BlattFarben.kacheln.length;
+    z.rundesRechteck(x, y - 3, kachel, kachel * 0.82, 4, BlattFarben.kacheln[farbe]);
+    z.textMitte(
+      kachelText(buchstaben[i]),
+      x + kachel / 2,
+      y + 3,
+      15,
+      farbe == 2 ? BlattFarben.text : BlattFarben.weiss,
+      istFett: true,
+    );
     x += kachel + abstand;
   }
 
-  z.text('Lies jede Reihe laut vor. Geschafft? Dann male den Stern an!', rand, y - 22, 11.5,
-      _Farben.text);
+  z.text(hinweis, rand, y - 22, 11.5, BlattFarben.text);
   return y - 30;
 }
 
-void _reihen(_Zeichner z, List<List<String>> reihen, int nummerStart, double x, double yOben,
-    double breite, double reihenHoehe, PdfColor band, PdfColor akzent) {
-  const nummerBreite = 10 * _mm, sternBreite = 12 * _mm;
-  final innen = breite - nummerBreite - sternBreite - 2 * _mm;
-  const minLuecke = 4 * _mm;
+void _reihen(
+  Zeichner z,
+  List<List<String>> reihen,
+  int nummerStart,
+  double x,
+  double yOben,
+  double breite,
+  double reihenHoehe,
+  PdfColor band,
+  PdfColor akzent,
+) {
+  const nummerBreite = 10 * mm, sternBreite = 12 * mm;
+  final innen = breite - nummerBreite - sternBreite - 2 * mm;
+  const minLuecke = 4 * mm;
   for (var i = 0; i < reihen.length; i++) {
     final reihe = reihen[i];
     final y = yOben - (i + 1) * reihenHoehe;
@@ -155,10 +181,16 @@ void _reihen(_Zeichner z, List<List<String>> reihen, int nummerStart, double x, 
     // Reihennummer
     final cy = y + reihenHoehe / 2;
     z.g.setFillColor(akzent);
-    z.g.drawEllipse(x + nummerBreite / 2 + 1, cy, 3.6 * _mm, 3.6 * _mm);
+    z.g.drawEllipse(x + nummerBreite / 2 + 1, cy, 3.6 * mm, 3.6 * mm);
     z.g.fillPath();
-    z.textMitte('${nummerStart + i}', x + nummerBreite / 2 + 1, cy - 4, 12, _Farben.weiss,
-        istFett: true);
+    z.textMitte(
+      '${nummerStart + i}',
+      x + nummerBreite / 2 + 1,
+      cy - 4,
+      12,
+      BlattFarben.weiss,
+      istFett: true,
+    );
 
     // Größte Schrift (max. 27 pt), bei der die ganze Reihe Platz hat;
     // die Wörter werden dann mit gleichen Abständen verteilt.
@@ -167,7 +199,7 @@ void _reihen(_Zeichner z, List<List<String>> reihen, int nummerStart, double x, 
     final groesse = math.min(27.0, (innen - minLuecke * reihe.length) / einheit);
     final luecke = (innen - einheit * groesse) / reihe.length;
     final grundlinie = cy - groesse * 0.22;
-    var wx = x + nummerBreite + 1 * _mm + luecke / 2;
+    var wx = x + nummerBreite + 1 * mm + luecke / 2;
     for (var j = 0; j < reihe.length; j++) {
       final w = z.breite(texte[j], groesse);
       z.wortMitBoegen(reihe[j], wx + w / 2, grundlinie, groesse);
@@ -176,47 +208,67 @@ void _reihen(_Zeichner z, List<List<String>> reihen, int nummerStart, double x, 
 
     z.g.setStrokeColor(akzent);
     z.g.setLineWidth(1.3);
-    z.stern(x + breite - sternBreite / 2, cy, 4.2 * _mm);
+    z.stern(x + breite - sternBreite / 2, cy, 4.2 * mm);
   }
 }
 
-/// Erstellt das PDF. Die Schriften (Andika regular/bold) werden als
+/// Erstellt das PDF. Die Schriften (regular/bold) werden als
 /// TTF-Daten übergeben, damit der Generator auch ohne Flutter testbar ist.
 Future<Uint8List> erstellePdf(LernblattInhalt inhalt, ByteData schrift, ByteData schriftFett) {
   final doc = PdfDocument();
-  PdfInfo(doc,
-      title: 'Mein Leseblatt – ${inhalt.buchstaben.map((b) => b.toUpperCase()).join(' ')}',
-      creator: 'Lernapp');
+  PdfInfo(
+    doc,
+    title: 'Mein Leseblatt – ${inhalt.buchstaben.map((b) => b.toUpperCase()).join(' ')}',
+    creator: 'Lernapp',
+  );
   final format = PdfPageFormat.a4;
   final page = PdfPage(doc, pageFormat: format);
-  final z = _Zeichner(page.getGraphics(), PdfTtfFont(doc, schrift), PdfTtfFont(doc, schriftFett));
+  final z = Zeichner(page.getGraphics(), PdfTtfFont(doc, schrift), PdfTtfFont(doc, schriftFett));
 
   final breite = format.width, hoehe = format.height;
-  const rand = 13 * _mm;
-  var y = _kopf(z, inhalt.buchstaben, breite, hoehe, rand);
-  const titelHoehe = 8 * _mm;
-  final platz = y - rand - 6 * _mm - titelHoehe * 2;
+  const rand = 13 * mm;
+  var y = zeichneKopf(z, inhalt.buchstaben, breite, hoehe, rand);
+  const titelHoehe = 8 * mm;
+  final platz = y - rand - 6 * mm - titelHoehe * 2;
   final anzahl = math.max(1, inhalt.silben.length + inhalt.woerter.length);
-  final reihenHoehe = math.min(23 * _mm, platz / anzahl);
+  final reihenHoehe = math.min(23 * mm, platz / anzahl);
 
   if (inhalt.silben.isNotEmpty) {
     y -= titelHoehe;
-    z.text('Silben lesen', rand, y + 5, 13, _Farben.silbenAkzent, istFett: true);
-    _reihen(z, inhalt.silben, 1, rand, y, breite - 2 * rand, reihenHoehe, _Farben.silbenBand,
-        _Farben.silbenAkzent);
+    z.text('Silben lesen', rand, y + 5, 13, BlattFarben.silbenAkzent, istFett: true);
+    _reihen(
+      z,
+      inhalt.silben,
+      1,
+      rand,
+      y,
+      breite - 2 * rand,
+      reihenHoehe,
+      BlattFarben.silbenBand,
+      BlattFarben.silbenAkzent,
+    );
     y -= inhalt.silben.length * reihenHoehe;
   }
   if (inhalt.woerter.isNotEmpty) {
     y -= titelHoehe;
-    z.text('Wörter lesen', rand, y + 5, 13, _Farben.woerterAkzent, istFett: true);
-    _reihen(z, inhalt.woerter, inhalt.silben.length + 1, rand, y, breite - 2 * rand, reihenHoehe,
-        _Farben.woerterBand, _Farben.woerterAkzent);
+    z.text('Wörter lesen', rand, y + 5, 13, BlattFarben.woerterAkzent, istFett: true);
+    _reihen(
+      z,
+      inhalt.woerter,
+      inhalt.silben.length + 1,
+      rand,
+      y,
+      breite - 2 * rand,
+      reihenHoehe,
+      BlattFarben.woerterBand,
+      BlattFarben.woerterAkzent,
+    );
   }
 
-  const fussY = rand - 6 * _mm + 4;
-  z.textRechts('Die Bögen zeigen die Silben.', breite - rand, fussY, 8, _Farben.linie);
+  const fussY = rand - 6 * mm + 4;
+  z.textRechts('Die Bögen zeigen die Silben.', breite - rand, fussY, 8, BlattFarben.linie);
   if (inhalt.ausschluesse.isNotEmpty) {
-    z.text('Ohne: ${inhalt.ausschluesse.join(', ')}', rand, fussY, 8, _Farben.linie);
+    z.text('Ohne: ${inhalt.ausschluesse.join(', ')}', rand, fussY, 8, BlattFarben.linie);
   }
   return doc.save();
 }

@@ -21,8 +21,11 @@ void main() {
     for (final r in reihen) {
       expect(r, hasLength(proReihe));
       for (final e in r) {
-        expect(e.replaceAll('-', '').toLowerCase().split('').every(beispiel.contains), isTrue,
-            reason: e);
+        expect(
+          e.replaceAll('-', '').toLowerCase().split('').every(beispiel.contains),
+          isTrue,
+          reason: e,
+        );
       }
     }
   });
@@ -36,10 +39,12 @@ void main() {
   });
 
   test('Ausschlüsse greifen bei Wörtern und Silben', () {
-    final inhalt = erzeugeInhalt(beispiel,
-        ohne: ['ie', 'ei', 'au', 'eu', 'ai', 'doppelvokal', 'doppelkonsonant'],
-        freiOhne: 'ol',
-        seed: 5);
+    final inhalt = erzeugeInhalt(
+      beispiel,
+      ohne: ['ie', 'ei', 'au', 'eu', 'ai', 'doppelvokal', 'doppelkonsonant'],
+      freiOhne: 'ol',
+      seed: 5,
+    );
     for (final e in [...inhalt.silben, ...inhalt.woerter].expand((r) => r)) {
       final rein = e.toLowerCase();
       for (final silbe in rein.split('-')) {
@@ -67,8 +72,11 @@ void main() {
 
   test('PDF wird erzeugt, auch mit allen Buchstaben', () async {
     for (final b in [beispiel, alleBuchstaben]) {
-      final pdf = await erstellePdf(erzeugeInhalt(b, ohne: ['h'], seed: 3),
-          _schrift('Andika-Regular.ttf'), _schrift('Andika-Bold.ttf'));
+      final pdf = await erstellePdf(
+        erzeugeInhalt(b, ohne: ['h'], seed: 3),
+        _schrift('LernappSchrift-Regular.ttf'),
+        _schrift('LernappSchrift-Bold.ttf'),
+      );
       expect(String.fromCharCodes(pdf.sublist(0, 5)), '%PDF-');
       expect(pdf.length, greaterThan(10000));
     }
@@ -83,7 +91,13 @@ void main() {
     lena.ohne = ['ie'];
     await daten.profilGeaendert();
     final inhalt = erzeugeInhalt(lena.buchstaben, ohne: lena.ohne);
-    final blatt = await daten.speichereBlatt(lena, inhalt, Uint8List.fromList([1, 2, 3]));
+    final blatt = await daten.speichereBlatt(
+      lena,
+      BlattArt.lesen,
+      Uint8List.fromList([1, 2, 3]),
+      buchstaben: inhalt.buchstaben,
+      ohne: inhalt.ausschluesse,
+    );
     expect(await daten.dateiVon(blatt).exists(), isTrue);
 
     final neu = await AppDaten.laden(ordner);

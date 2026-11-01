@@ -23,5 +23,5 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/fonts/Andika-Regular.ttf
-    - assets/fonts/Andika-Bold.ttf
+    - assets/fonts/LernappSchrift-Regular.ttf
+    - assets/fonts/LernappSchrift-Bold.ttf

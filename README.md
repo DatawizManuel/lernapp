@@ -47,5 +47,7 @@ Die APK ist mit einem festen Test-Schlüssel (`android/app/debug.keystore`)
 signiert. Für eine Veröffentlichung im Play Store braucht es einen eigenen,
 geheimen Schlüssel.
 
-Schrift: [Andika](https://software.sil.org/andika/) von SIL International,
-SIL Open Font License 1.1.
+Schrift: „Lernapp Schrift“, abgeleitet von [Andika](https://software.sil.org/andika/)
+(SIL Global, SIL Open Font License 1.1, siehe `assets/fonts/OFL.txt`) mit
+kleinem „l“ mit Bogen wie in der österreichischen Volksschule. Neu bauen mit
+`tool/schrift_bauen.py`.

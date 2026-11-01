@@ -18,8 +18,9 @@ Future<String?> _nameAbfragen(BuildContext context, String titel, [String start 
       actions: [
         TextButton(onPressed: () => Navigator.pop(context), child: const Text('Abbrechen')),
         FilledButton(
-            onPressed: () => Navigator.pop(context, controller.text),
-            child: const Text('Speichern')),
+          onPressed: () => Navigator.pop(context, controller.text),
+          child: const Text('Speichern'),
+        ),
       ],
     ),
   );
@@ -49,12 +50,16 @@ class ProfileSeite extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: Text('${p.name} löschen?'),
-        content: Text(anzahl == 0
-            ? 'Die Einstellungen für dieses Kind werden gelöscht.'
-            : 'Die Einstellungen und $anzahl gespeicherte Leseblätter werden gelöscht.'),
+        content: Text(
+          anzahl == 0
+              ? 'Die Einstellungen für dieses Kind werden gelöscht.'
+              : 'Die Einstellungen und $anzahl gespeicherte Blätter werden gelöscht.',
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context, false), child: const Text('Abbrechen')),
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Abbrechen'),
+          ),
           FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Löschen')),
         ],
       ),
@@ -75,28 +80,34 @@ class ProfileSeite extends StatelessWidget {
         ),
         body: daten.profile.isEmpty
             ? const Center(child: Text('Noch kein Kind angelegt.'))
-            : ListView(children: [
-                for (final p in daten.profile)
-                  ListTile(
-                    leading: Icon(p.id == daten.aktivesProfil?.id
-                        ? Icons.radio_button_checked
-                        : Icons.radio_button_unchecked),
-                    title: Text(p.name),
-                    subtitle: Text(p.buchstaben.isEmpty
-                        ? 'Noch keine Buchstaben ausgewählt'
-                        : p.buchstaben.map((b) => b.toUpperCase()).join(' ')),
-                    onTap: () => daten.waehleProfil(p),
-                    trailing: PopupMenuButton<String>(
-                      onSelected: (aktion) => aktion == 'umbenennen'
-                          ? _umbenennen(context, p)
-                          : _loeschen(context, p),
-                      itemBuilder: (_) => const [
-                        PopupMenuItem(value: 'umbenennen', child: Text('Umbenennen')),
-                        PopupMenuItem(value: 'loeschen', child: Text('Löschen')),
-                      ],
+            : ListView(
+                children: [
+                  for (final p in daten.profile)
+                    ListTile(
+                      leading: Icon(
+                        p.id == daten.aktivesProfil?.id
+                            ? Icons.radio_button_checked
+                            : Icons.radio_button_unchecked,
+                      ),
+                      title: Text(p.name),
+                      subtitle: Text(
+                        p.buchstaben.isEmpty
+                            ? 'Noch keine Buchstaben ausgewählt'
+                            : p.buchstaben.map((b) => b.toUpperCase()).join(' '),
+                      ),
+                      onTap: () => daten.waehleProfil(p),
+                      trailing: PopupMenuButton<String>(
+                        onSelected: (aktion) => aktion == 'umbenennen'
+                            ? _umbenennen(context, p)
+                            : _loeschen(context, p),
+                        itemBuilder: (_) => const [
+                          PopupMenuItem(value: 'umbenennen', child: Text('Umbenennen')),
+                          PopupMenuItem(value: 'loeschen', child: Text('Löschen')),
+                        ],
+                      ),
                     ),
-                  ),
-              ]),
+                ],
+              ),
       ),
     );
   }

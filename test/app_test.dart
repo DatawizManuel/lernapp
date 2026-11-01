@@ -17,6 +17,7 @@ void main() {
 
     await tester.tap(find.text('Deutsch'));
     await tester.pumpAndSettle();
+    expect(find.text('Schreibblätter'), findsOneWidget);
     await tester.tap(find.text('Leseblätter'));
     await tester.pumpAndSettle();
     expect(find.text('Kind hinzufügen'), findsOneWidget);
@@ -29,5 +30,30 @@ void main() {
     // Ohne Buchstaben ist der Knopf gesperrt.
     final knopf = find.widgetWithText(FilledButton, 'Leseblatt erstellen');
     expect(tester.widget<FilledButton>(knopf).onPressed, isNull);
+  });
+
+  testWidgets('Schreibblätter: Buchstaben wählen schaltet den Knopf frei', (tester) async {
+    final ordner = Directory.systemTemp.createTempSync('lernapp');
+    addTearDown(() => ordner.deleteSync(recursive: true));
+    final daten = (await tester.runAsync(() async {
+      final d = await AppDaten.laden(ordner);
+      await d.neuesProfil('Max');
+      return d;
+    }))!;
+
+    await tester.pumpWidget(LernApp(daten: daten));
+    await tester.tap(find.text('Deutsch'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Schreibblätter'));
+    await tester.pumpAndSettle();
+    expect(find.text('Welche Buchstaben soll Max schreiben üben?'), findsOneWidget);
+
+    final knopf = find.widgetWithText(FilledButton, 'Schreibblatt erstellen');
+    expect(tester.widget<FilledButton>(knopf).onPressed, isNull);
+    await tester.tap(find.text('Mm'));
+    await tester.pump();
+    expect(tester.widget<FilledButton>(knopf).onPressed, isNotNull);
+    expect(find.text('1 Seite mit je 8 Zeilen'), findsOneWidget);
+    expect(daten.aktivesProfil!.schreibBuchstaben, ['m']);
   });
 }

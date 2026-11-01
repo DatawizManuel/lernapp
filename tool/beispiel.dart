@@ -15,6 +15,10 @@ Future<void> main(List<String> args) async {
     print('${i + 1}: ${r.join('  ')}');
   }
   ByteData schrift(String n) => ByteData.sublistView(File('assets/fonts/$n').readAsBytesSync());
-  final pdf = await erstellePdf(inhalt, schrift('Andika-Regular.ttf'), schrift('Andika-Bold.ttf'));
+  final pdf = await erstellePdf(
+    inhalt,
+    schrift('LernappSchrift-Regular.ttf'),
+    schrift('LernappSchrift-Bold.ttf'),
+  );
   File(args[1]).writeAsBytesSync(pdf);
 }

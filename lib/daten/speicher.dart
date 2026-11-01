@@ -8,7 +8,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
-import '../generator/inhalt.dart';
+import '../generator/schreiben.dart' show SchreibForm;
 
 class Profil {
   Profil({
@@ -17,16 +17,21 @@ class Profil {
     List<String>? buchstaben,
     List<String>? ohne,
     this.freiOhne = '',
-  })  : buchstaben = buchstaben ?? [],
-        ohne = ohne ?? [];
+    List<String>? schreibBuchstaben,
+    this.schreibForm = SchreibForm.beide,
+  }) : buchstaben = buchstaben ?? [],
+       ohne = ohne ?? [],
+       schreibBuchstaben = schreibBuchstaben ?? [];
 
   factory Profil.fromJson(Map<String, dynamic> j) => Profil(
-        id: j['id'] as String,
-        name: j['name'] as String,
-        buchstaben: List<String>.from(j['buchstaben'] as List? ?? []),
-        ohne: List<String>.from(j['ohne'] as List? ?? []),
-        freiOhne: j['freiOhne'] as String? ?? '',
-      );
+    id: j['id'] as String,
+    name: j['name'] as String,
+    buchstaben: List<String>.from(j['buchstaben'] as List? ?? []),
+    ohne: List<String>.from(j['ohne'] as List? ?? []),
+    freiOhne: j['freiOhne'] as String? ?? '',
+    schreibBuchstaben: List<String>.from(j['schreibBuchstaben'] as List? ?? []),
+    schreibForm: SchreibForm.values.asNameMap()[j['schreibForm']] ?? SchreibForm.beide,
+  );
 
   final String id;
   String name;
@@ -40,12 +45,27 @@ class Profil {
   /// Weitere auszuschließende Buchstabenfolgen, z. B. "ll, rr".
   String freiOhne;
 
-  Map<String, dynamic> toJson() =>
-      {'id': id, 'name': name, 'buchstaben': buchstaben, 'ohne': ohne, 'freiOhne': freiOhne};
+  /// Buchstaben für das Schreibblatt (klein geschrieben).
+  List<String> schreibBuchstaben;
+  SchreibForm schreibForm;
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'buchstaben': buchstaben,
+    'ohne': ohne,
+    'freiOhne': freiOhne,
+    'schreibBuchstaben': schreibBuchstaben,
+    'schreibForm': schreibForm.name,
+  };
 }
+
+/// Art eines gespeicherten Blatts.
+enum BlattArt { lesen, schreiben }
 
 class GespeichertesBlatt {
   GespeichertesBlatt({
+    this.art = BlattArt.lesen,
     required this.datei,
     required this.profilId,
     required this.erstellt,
@@ -54,12 +74,15 @@ class GespeichertesBlatt {
   });
 
   factory GespeichertesBlatt.fromJson(Map<String, dynamic> j) => GespeichertesBlatt(
-        datei: j['datei'] as String,
-        profilId: j['profilId'] as String,
-        erstellt: DateTime.parse(j['erstellt'] as String),
-        buchstaben: List<String>.from(j['buchstaben'] as List),
-        ohne: List<String>.from(j['ohne'] as List? ?? []),
-      );
+    art: BlattArt.values.asNameMap()[j['art']] ?? BlattArt.lesen,
+    datei: j['datei'] as String,
+    profilId: j['profilId'] as String,
+    erstellt: DateTime.parse(j['erstellt'] as String),
+    buchstaben: List<String>.from(j['buchstaben'] as List),
+    ohne: List<String>.from(j['ohne'] as List? ?? []),
+  );
+
+  final BlattArt art;
 
   /// Dateiname im Blätter-Ordner.
   final String datei;
@@ -69,12 +92,13 @@ class GespeichertesBlatt {
   final List<String> ohne;
 
   Map<String, dynamic> toJson() => {
-        'datei': datei,
-        'profilId': profilId,
-        'erstellt': erstellt.toIso8601String(),
-        'buchstaben': buchstaben,
-        'ohne': ohne,
-      };
+    'art': art.name,
+    'datei': datei,
+    'profilId': profilId,
+    'erstellt': erstellt.toIso8601String(),
+    'buchstaben': buchstaben,
+    'ohne': ohne,
+  };
 }
 
 String _zwei(int n) => n.toString().padLeft(2, '0');
@@ -100,7 +124,9 @@ class AppDaten extends ChangeNotifier {
     await d.blattOrdner.create(recursive: true);
     if (await d._profilDatei.exists()) {
       final j = jsonDecode(await d._profilDatei.readAsString()) as Map<String, dynamic>;
-      d.profile.addAll((j['profile'] as List).map((p) => Profil.fromJson(p as Map<String, dynamic>)));
+      d.profile.addAll(
+        (j['profile'] as List).map((p) => Profil.fromJson(p as Map<String, dynamic>)),
+      );
       d._aktivId = j['aktiv'] as String?;
     }
     if (await d._blattIndex.exists()) {
@@ -144,25 +170,33 @@ class AppDaten extends ChangeNotifier {
     await _profileSpeichern();
   }
 
-  /// Blätter eines Profils, die neuesten zuerst.
-  List<GespeichertesBlatt> blaetterVon(Profil p) =>
-      blaetter.where((b) => b.profilId == p.id).toList()
+  /// Blätter eines Profils (optional nur einer Art), die neuesten zuerst.
+  List<GespeichertesBlatt> blaetterVon(Profil p, [BlattArt? art]) =>
+      blaetter.where((b) => b.profilId == p.id && (art == null || b.art == art)).toList()
         ..sort((a, b) => b.erstellt.compareTo(a.erstellt));
 
   File dateiVon(GespeichertesBlatt b) => File('${blattOrdner.path}/${b.datei}');
 
   Future<GespeichertesBlatt> speichereBlatt(
-      Profil p, LernblattInhalt inhalt, Uint8List pdf) async {
+    Profil p,
+    BlattArt art,
+    Uint8List pdf, {
+    required List<String> buchstaben,
+    List<String> ohne = const [],
+  }) async {
     final jetzt = DateTime.now();
-    final name = 'Leseblatt_${_dateiname(p.name)}_${jetzt.year}-${_zwei(jetzt.month)}-'
+    final praefix = art == BlattArt.lesen ? 'Leseblatt' : 'Schreibblatt';
+    final name =
+        '${praefix}_${_dateiname(p.name)}_${jetzt.year}-${_zwei(jetzt.month)}-'
         '${_zwei(jetzt.day)}_${_zwei(jetzt.hour)}-${_zwei(jetzt.minute)}-${_zwei(jetzt.second)}.pdf';
     await File('${blattOrdner.path}/$name').writeAsBytes(pdf, flush: true);
     final b = GespeichertesBlatt(
+      art: art,
       datei: name,
       profilId: p.id,
       erstellt: jetzt,
-      buchstaben: inhalt.buchstaben,
-      ohne: inhalt.ausschluesse,
+      buchstaben: buchstaben,
+      ohne: ohne,
     );
     blaetter.add(b);
     await _indexSpeichern();
@@ -194,8 +228,10 @@ class AppDaten extends ChangeNotifier {
   }
 
   Future<void> _profileSpeichern() async {
-    await _schreibe(_profilDatei,
-        {'aktiv': _aktivId, 'profile': profile.map((p) => p.toJson()).toList()});
+    await _schreibe(_profilDatei, {
+      'aktiv': _aktivId,
+      'profile': profile.map((p) => p.toJson()).toList(),
+    });
     notifyListeners();
   }
 

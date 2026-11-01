@@ -40,13 +40,16 @@ class MenuePunkt extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(titel,
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            color: aktiv ? farben.onSecondaryContainer : farben.outline)),
+                    Text(
+                      titel,
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(color: aktiv ? farben.onSecondaryContainer : farben.outline),
+                    ),
                     const SizedBox(height: 4),
-                    Text(untertitel,
-                        style: TextStyle(
-                            color: aktiv ? farben.onSecondaryContainer : farben.outline)),
+                    Text(
+                      untertitel,
+                      style: TextStyle(color: aktiv ? farben.onSecondaryContainer : farben.outline),
+                    ),
                   ],
                 ),
               ),
@@ -73,10 +76,11 @@ class StartSeite extends StatelessWidget {
         children: [
           MenuePunkt(
             titel: 'Deutsch',
-            untertitel: 'Leseblätter erstellen',
+            untertitel: 'Leseblätter und Schreibblätter erstellen',
             icon: Icons.menu_book_outlined,
-            onTap: () => Navigator.of(context)
-                .push(MaterialPageRoute(builder: (_) => DeutschSeite(daten: daten))),
+            onTap: () =>
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (_) => DeutschSeite(daten: daten))),
           ),
           const SizedBox(height: 12),
           const MenuePunkt(

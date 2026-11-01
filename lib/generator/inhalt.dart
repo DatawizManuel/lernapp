@@ -59,28 +59,48 @@ final ausschluesse = <Ausschluss>[
   Ausschluss('au', 'au', 'Maus', 'Dehnung und Zwielaute', _jeSilbe('au')),
   Ausschluss('eu', 'eu/äu', 'Eule', 'Dehnung und Zwielaute', _jeSilbe('eu|äu')),
   Ausschluss('ai', 'ai', 'Mais', 'Dehnung und Zwielaute', _jeSilbe('ai')),
-  Ausschluss('doppelvokal', 'Doppelvokale', 'Meer, Moos', 'Doppelte Buchstaben',
-      _imWort(r'([aeiou])\1')),
-  Ausschluss('doppelkonsonant', 'Doppelkonsonanten', 'Rolle, Lamm', 'Doppelte Buchstaben',
-      _imWort(r'([^aeiouäöü])\1')),
+  Ausschluss(
+    'doppelvokal',
+    'Doppelvokale',
+    'Meer, Moos',
+    'Doppelte Buchstaben',
+    _imWort(r'([aeiou])\1'),
+  ),
+  Ausschluss(
+    'doppelkonsonant',
+    'Doppelkonsonanten',
+    'Rolle, Lamm',
+    'Doppelte Buchstaben',
+    _imWort(r'([^aeiouäöü])\1'),
+  ),
   Ausschluss('ck', 'ck', 'Decke', 'Buchstabenverbindungen', _imWort('ck')),
   Ausschluss('tz', 'tz', 'Katze', 'Buchstabenverbindungen', _imWort('tz')),
   Ausschluss('ch', 'ch', 'ich', 'Buchstabenverbindungen', _imWort('(?<!s)ch')),
   Ausschluss('sch', 'sch', 'Fisch', 'Buchstabenverbindungen', _imWort('sch')),
-  Ausschluss('sp-st', 'sp/st am Silbenanfang', 'Stern', 'Buchstabenverbindungen',
-      _jeSilbe('^s[pt]')),
+  Ausschluss(
+    'sp-st',
+    'sp/st am Silbenanfang',
+    'Stern',
+    'Buchstabenverbindungen',
+    _jeSilbe('^s[pt]'),
+  ),
   Ausschluss('qu', 'qu', 'Qualle', 'Buchstabenverbindungen', _imWort('qu')),
   Ausschluss('ng-nk', 'ng/nk', 'Ring, Bank', 'Buchstabenverbindungen', _imWort('n[gk]')),
   Ausschluss('umlaute', 'ä, ö, ü', 'Käse', 'Sonstiges', _imWort('[äöü]')),
-  Ausschluss('konsonantenfolge', 'zwei Mitlaute hintereinander in einer Silbe', 'Ulme',
-      'Sonstiges', _jeSilbe(r'[^aeiouäöü]{2}')),
+  Ausschluss(
+    'konsonantenfolge',
+    'zwei Mitlaute hintereinander in einer Silbe',
+    'Ulme',
+    'Sonstiges',
+    _jeSilbe(r'[^aeiouäöü]{2}'),
+  ),
 ];
 
 /// Zerlegt eine freie Eingabe wie "ll, rr" in einzelne Buchstabenfolgen.
 List<String> freieFolgen(String eingabe) => {
-      for (final t in eingabe.toLowerCase().split(RegExp(r'[,;\s]+')))
-        if (t.trim().isNotEmpty) t.trim(),
-    }.toList();
+  for (final t in eingabe.toLowerCase().split(RegExp(r'[,;\s]+')))
+    if (t.trim().isNotEmpty) t.trim(),
+}.toList();
 
 class AusschlussRegeln {
   AusschlussRegeln(Iterable<String> kuerzel, {String frei = ''}) {
@@ -148,16 +168,23 @@ String _gross(String s) => s.isEmpty || s[0] == 'ß' ? s : s[0].toUpperCase() + 
 
 /// Bis zu `anzahl` verschiedene Einträge in zufälliger Reihenfolge.
 List<String> _ziehe(List<String> kandidaten, int anzahl, Random rng, AusschlussRegeln regeln) {
-  final pool = kandidaten
-      .toSet()
-      .where((k) => !silbenSperre.contains(k.toLowerCase().replaceAll('-', '')) && !regeln.trifft(k))
-      .toList()
-    ..shuffle(rng);
+  final pool =
+      kandidaten
+          .toSet()
+          .where(
+            (k) => !silbenSperre.contains(k.toLowerCase().replaceAll('-', '')) && !regeln.trifft(k),
+          )
+          .toList()
+        ..shuffle(rng);
   return pool.take(anzahl).toList();
 }
 
-List<List<String>> silbenReihen(Set<String> erlaubt, Random rng, AusschlussRegeln regeln,
-    {int extra = 0}) {
+List<List<String>> silbenReihen(
+  Set<String> erlaubt,
+  Random rng,
+  AusschlussRegeln regeln, {
+  int extra = 0,
+}) {
   final vok = vokale.split('').where(erlaubt.contains).toList();
   final kons = _konsonantenSortiert(erlaubt);
   // Kein deutsches Wort beginnt mit ß, also nur als Silbenende verwenden.
@@ -166,7 +193,10 @@ List<List<String>> silbenReihen(Set<String> erlaubt, Random rng, AusschlussRegel
 
   final erste = anlaut.take(2).toList();
   final zweite = anlaut.length > 2 ? anlaut.sublist(2) : anlaut;
-  List<String> offen(List<String> ks) => [for (final k in ks) for (final v in vok) k + v];
+  List<String> offen(List<String> ks) => [
+    for (final k in ks)
+      for (final v in vok) k + v,
+  ];
   List<String> zieh(List<String> kandidaten) => _ziehe(kandidaten, proReihe, rng, regeln);
   final geschlossen = [
     for (final a in anlaut)
@@ -179,7 +209,10 @@ List<List<String>> silbenReihen(Set<String> erlaubt, Random rng, AusschlussRegel
     zieh(offen(erste)),
     zieh(offen(zweite)),
     zieh(offen(anlaut)).map(_gross).toList(),
-    zieh([for (final v in vok) for (final k in kons) v + k]),
+    zieh([
+      for (final v in vok)
+        for (final k in kons) v + k,
+    ]),
     zieh(geschlossen),
   ];
   // Zusatzreihen, wenn es zu wenige Wörter gibt: zwei Silben verbinden.
@@ -198,14 +231,17 @@ List<List<String>> silbenReihen(Set<String> erlaubt, Random rng, AusschlussRegel
 
 /// Alle passenden Wörter, sortiert von leicht nach schwer.
 List<String> passendeWoerter(Set<String> erlaubt, AusschlussRegeln regeln) =>
-    woerter.toSet().where((w) => wortErlaubt(w, erlaubt, regeln)).toList()
-      ..sort((a, b) {
-        final c = schwierigkeit(a).compareTo(schwierigkeit(b));
-        return c != 0 ? c : a.toLowerCase().compareTo(b.toLowerCase());
-      });
+    woerter.toSet().where((w) => wortErlaubt(w, erlaubt, regeln)).toList()..sort((a, b) {
+      final c = schwierigkeit(a).compareTo(schwierigkeit(b));
+      return c != 0 ? c : a.toLowerCase().compareTo(b.toLowerCase());
+    });
 
 List<List<String>> wortReihen(
-    Set<String> erlaubt, int anzahlReihen, Random rng, AusschlussRegeln regeln) {
+  Set<String> erlaubt,
+  int anzahlReihen,
+  Random rng,
+  AusschlussRegeln regeln,
+) {
   final passend = passendeWoerter(erlaubt, regeln);
   if (passend.isEmpty) return [];
   // In gleich große Schwierigkeits-Stufen teilen, aus jeder Stufe ziehen.
@@ -213,9 +249,10 @@ List<List<String>> wortReihen(
   final groesse = passend.length / stufen;
   return [
     for (var i = 0; i < stufen; i++)
-      (passend.sublist((i * groesse).round(), ((i + 1) * groesse).round())..shuffle(rng))
-          .take(proReihe)
-          .toList()
+      (passend.sublist(
+          (i * groesse).round(),
+          ((i + 1) * groesse).round(),
+        )..shuffle(rng)).take(proReihe).toList()
         ..sort((a, b) => schwierigkeit(a).compareTo(schwierigkeit(b))),
   ];
 }
@@ -236,10 +273,15 @@ class LernblattInhalt {
 
 /// Sortiert Buchstaben wie im Alphabet (Umlaute und ß am Ende).
 List<String> sortiereBuchstaben(Iterable<String> buchstaben) =>
-    buchstaben.toSet().toList()..sort((a, b) => alleBuchstaben.indexOf(a).compareTo(alleBuchstaben.indexOf(b)));
+    buchstaben.toSet().toList()
+      ..sort((a, b) => alleBuchstaben.indexOf(a).compareTo(alleBuchstaben.indexOf(b)));
 
-LernblattInhalt erzeugeInhalt(List<String> buchstaben,
-    {Iterable<String> ohne = const [], String freiOhne = '', int? seed}) {
+LernblattInhalt erzeugeInhalt(
+  List<String> buchstaben, {
+  Iterable<String> ohne = const [],
+  String freiOhne = '',
+  int? seed,
+}) {
   final erlaubt = buchstaben.map((b) => b.toLowerCase()).toSet();
   final rng = Random(seed);
   final regeln = AusschlussRegeln(ohne, frei: freiOhne);

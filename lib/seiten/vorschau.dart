@@ -17,29 +17,37 @@ class VorschauSeite extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(neu ? 'Neues Leseblatt' : datumText(blatt.erstellt))),
-      body: Column(children: [
-        if (neu)
-          MaterialBanner(
-            content: const Text('Gespeichert. Du findest das Blatt später unter „Gespeichert“.'),
-            leading: const Icon(Icons.check_circle_outline),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Zurück'),
-              ),
-            ],
-          ),
-        Expanded(
-          child: PdfPreview(
-            build: (_) => daten.dateiVon(blatt).readAsBytes(),
-            pdfFileName: blatt.datei,
-            canChangePageFormat: false,
-            canChangeOrientation: false,
-            canDebug: false,
-          ),
+      appBar: AppBar(
+        title: Text(
+          neu
+              ? (blatt.art == BlattArt.lesen ? 'Neues Leseblatt' : 'Neues Schreibblatt')
+              : datumText(blatt.erstellt),
         ),
-      ]),
+      ),
+      body: Column(
+        children: [
+          if (neu)
+            MaterialBanner(
+              content: const Text('Gespeichert. Du findest das Blatt später unter „Gespeichert“.'),
+              leading: const Icon(Icons.check_circle_outline),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Zurück'),
+                ),
+              ],
+            ),
+          Expanded(
+            child: PdfPreview(
+              build: (_) => daten.dateiVon(blatt).readAsBytes(),
+              pdfFileName: blatt.datei,
+              canChangePageFormat: false,
+              canChangeOrientation: false,
+              canDebug: false,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

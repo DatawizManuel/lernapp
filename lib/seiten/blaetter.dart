@@ -5,11 +5,12 @@ import 'package:printing/printing.dart';
 import '../daten/speicher.dart';
 import '../generator/inhalt.dart';
 import '../generator/pdf.dart';
+import '../generator/rechnen.dart';
 import '../generator/schreiben.dart';
 import 'profile.dart';
 import 'vorschau.dart';
 
-/// Seite für eine Blatt-Art (Leseblätter oder Schreibblätter) mit den
+/// Seite für eine Blatt-Art (Lese-, Schreib-, Zahlen- oder Rechenblätter) mit den
 /// Tabs „Neues Blatt“ und „Gespeichert“.
 class BlattSeite extends StatelessWidget {
   const BlattSeite({super.key, required this.daten, required this.art});
@@ -27,7 +28,7 @@ class BlattSeite extends StatelessWidget {
           length: 2,
           child: Scaffold(
             appBar: AppBar(
-              title: Text(art == BlattArt.lesen ? 'Leseblätter' : 'Schreibblätter'),
+              title: Text(art.titel),
               actions: [
                 if (profil != null) _ProfilWahl(daten: daten, profil: profil),
                 IconButton(
@@ -51,10 +52,28 @@ class BlattSeite extends StatelessWidget {
                 ? _KeinProfil(daten: daten)
                 : TabBarView(
                     children: [
-                      if (art == BlattArt.lesen)
-                        _NeuesLeseblatt(key: ValueKey(profil.id), daten: daten, profil: profil)
-                      else
-                        _NeuesSchreibblatt(key: ValueKey(profil.id), daten: daten, profil: profil),
+                      switch (art) {
+                        BlattArt.lesen => _NeuesLeseblatt(
+                          key: ValueKey(profil.id),
+                          daten: daten,
+                          profil: profil,
+                        ),
+                        BlattArt.schreiben => _NeuesSchreibblatt(
+                          key: ValueKey(profil.id),
+                          daten: daten,
+                          profil: profil,
+                        ),
+                        BlattArt.zahlen => _NeuesZahlenblatt(
+                          key: ValueKey(profil.id),
+                          daten: daten,
+                          profil: profil,
+                        ),
+                        BlattArt.rechnen => _NeuesRechenblatt(
+                          key: ValueKey(profil.id),
+                          daten: daten,
+                          profil: profil,
+                        ),
+                      },
                       _Gespeichert(daten: daten, profil: profil, art: art),
                     ],
                   ),
@@ -237,6 +256,209 @@ mixin _Erstellen<T extends StatefulWidget> on State<T> {
     } finally {
       if (mounted) setState(() => laeuft = false);
     }
+  }
+}
+
+/// Zahlen-Schreibblatt: Ziffern auswählen.
+class _NeuesZahlenblatt extends StatefulWidget {
+  const _NeuesZahlenblatt({super.key, required this.daten, required this.profil});
+
+  final AppDaten daten;
+  final Profil profil;
+
+  @override
+  State<_NeuesZahlenblatt> createState() => _NeuesZahlenblattState();
+}
+
+class _NeuesZahlenblattState extends State<_NeuesZahlenblatt> with _Erstellen {
+  Profil get p => widget.profil;
+
+  void _aendern(VoidCallback aenderung) {
+    setState(aenderung);
+    widget.daten.profilGeaendert();
+  }
+
+  Future<GespeichertesBlatt> _speichern() async {
+    final (schrift, fett) = await _schriften();
+    final pdf = await erstelleZahlenSchreibPdf(p.ziffern, schrift, fett);
+    final ziffern = alleZiffern.where(p.ziffern.contains).toList();
+    return widget.daten.speichereBlatt(
+      p,
+      BlattArt.zahlen,
+      pdf,
+      buchstaben: ziffern,
+      info: 'Zahlen: ${ziffern.join(' ')}',
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+    final seiten = (zahlenZeilen(p.ziffern).length / schreibZeilenProSeite).ceil();
+
+    return Column(
+      children: [
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              Text('Welche Zahlen soll ${p.name} schreiben üben?', style: text.titleMedium),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final z in alleZiffern)
+                    FilterChip(
+                      label: Text(z, style: const TextStyle(fontSize: 16)),
+                      selected: p.ziffern.contains(z),
+                      onSelected: (an) => _aendern(
+                        () => p.ziffern = alleZiffern
+                            .where((x) => x == z ? an : p.ziffern.contains(x))
+                            .toList(),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Jede Zeile beginnt mit der Zahl als Vorlage, danach zweimal '
+                'strichliert zum Nachfahren. Der Rest der Zeile ist frei zum Üben.',
+              ),
+            ],
+          ),
+        ),
+        _ErstellenLeiste(
+          hinweis: seiten == 0
+              ? 'Wähle mindestens eine Zahl.'
+              : '$seiten ${seiten == 1 ? 'Seite' : 'Seiten'} mit je $schreibZeilenProSeite Zeilen',
+          knopf: 'Zahlenblatt erstellen',
+          laeuft: laeuft,
+          onPressed: seiten == 0 ? null : () => erstellen(widget.daten, _speichern),
+        ),
+      ],
+    );
+  }
+}
+
+/// Rechenblatt: Rechenarten und Zahlenraum (gelten für alle Mathe-Übungen).
+class _NeuesRechenblatt extends StatefulWidget {
+  const _NeuesRechenblatt({super.key, required this.daten, required this.profil});
+
+  final AppDaten daten;
+  final Profil profil;
+
+  @override
+  State<_NeuesRechenblatt> createState() => _NeuesRechenblattState();
+}
+
+class _NeuesRechenblattState extends State<_NeuesRechenblatt> with _Erstellen {
+  late final _raumController = TextEditingController(text: '${widget.profil.zahlenraum}');
+  String? _raumFehler;
+
+  Profil get p => widget.profil;
+
+  @override
+  void dispose() {
+    _raumController.dispose();
+    super.dispose();
+  }
+
+  void _aendern(VoidCallback aenderung) {
+    setState(aenderung);
+    widget.daten.profilGeaendert();
+  }
+
+  void _raumGeaendert(String eingabe) {
+    final wert = int.tryParse(eingabe.trim());
+    if (wert == null || wert < zahlenraumMin || wert > zahlenraumMax) {
+      setState(() => _raumFehler = 'Bitte eine Zahl von $zahlenraumMin bis $zahlenraumMax');
+      return;
+    }
+    _raumFehler = null;
+    _aendern(() => p.zahlenraum = wert);
+  }
+
+  Future<GespeichertesBlatt> _speichern() async {
+    final (schrift, fett) = await _schriften();
+    final arten = Rechenart.values.where(p.rechenarten.contains).toList();
+    final pdf = await erstelleRechenPdf(arten, p.zahlenraum, schrift, fett);
+    return widget.daten.speichereBlatt(
+      p,
+      BlattArt.rechnen,
+      pdf,
+      buchstaben: [for (final a in arten) a.zeichen],
+      info: 'Bis ${p.zahlenraum}: ${arten.map((a) => a.bezeichnung).join(', ')}',
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+    final bereit = p.rechenarten.isNotEmpty && _raumFehler == null;
+
+    return Column(
+      children: [
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              Text('Bis wohin rechnet ${p.name}?', style: text.titleMedium),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _raumController,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                decoration: InputDecoration(
+                  labelText: 'Zahlenraum',
+                  prefixText: 'bis ',
+                  helperText: 'Im Zahlenraum 20 kommen nur einstellige Zahlen vor.',
+                  errorText: _raumFehler,
+                  border: const OutlineInputBorder(),
+                ),
+                onChanged: _raumGeaendert,
+              ),
+              const Divider(height: 32),
+              Text('Welche Rechenarten?', style: text.titleMedium),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final art in Rechenart.values)
+                    FilterChip(
+                      label: Text(
+                        '${art.zeichen}  ${art.bezeichnung}',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      selected: p.rechenarten.contains(art),
+                      onSelected: (an) => _aendern(
+                        () => p.rechenarten = Rechenart.values
+                            .where((x) => x == art ? an : p.rechenarten.contains(x))
+                            .toList(),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Die Ergebnisse bleiben im Zahlenraum. Minus wird nie negativ, Geteilt geht '
+                'immer ohne Rest auf. Mal und Geteilt bleiben bis 100 beim Einmaleins. '
+                'Zahlenraum und Rechenarten gelten für alle Mathe-Übungen.',
+              ),
+            ],
+          ),
+        ),
+        _ErstellenLeiste(
+          hinweis: p.rechenarten.isEmpty
+              ? 'Wähle mindestens eine Rechenart.'
+              : '$aufgabenProSeite Aufgaben bis ${p.zahlenraum}',
+          knopf: 'Rechenblatt erstellen',
+          laeuft: laeuft,
+          onPressed: bereit ? () => erstellen(widget.daten, _speichern) : null,
+        ),
+      ],
+    );
   }
 }
 
@@ -444,14 +666,12 @@ class _Gespeichert extends StatelessWidget {
   final Profil profil;
   final BlattArt art;
 
-  String get _name => art == BlattArt.lesen ? 'Leseblatt' : 'Schreibblatt';
-
   Future<void> _loeschen(BuildContext context, GespeichertesBlatt b) async {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Blatt löschen?'),
-        content: Text('$_name vom ${datumText(b.erstellt)} wird gelöscht.'),
+        content: Text('${b.art.einzahl} vom ${datumText(b.erstellt)} wird gelöscht.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -472,7 +692,7 @@ class _Gespeichert extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(32),
           child: Text(
-            'Für ${profil.name} wurden noch keine ${_name == 'Leseblatt' ? 'Leseblätter' : 'Schreibblätter'} erstellt.',
+            'Für ${profil.name} wurden noch keine ${art.mehrzahl} erstellt.',
             textAlign: TextAlign.center,
           ),
         ),
@@ -488,7 +708,7 @@ class _Gespeichert extends StatelessWidget {
           title: Text(datumText(b.erstellt)),
           subtitle: Text(
             [
-              'Buchstaben: ${b.buchstaben.map((x) => x.toUpperCase()).join(' ')}',
+              b.info ?? 'Buchstaben: ${b.buchstaben.map((x) => x.toUpperCase()).join(' ')}',
               if (b.ohne.isNotEmpty) 'Ohne: ${b.ohne.join(', ')}',
             ].join('\n'),
           ),

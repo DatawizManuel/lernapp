@@ -106,7 +106,9 @@ class Zeichner {
   }
 }
 
-String kachelText(String b) => b == 'ß' ? 'ß' : b.toUpperCase() + b;
+/// Text einer Kachel: Buchstaben groß und klein ("Aa"), alles andere
+/// (ß, Ziffern, Rechenzeichen) so wie es ist.
+String kachelText(String b) => b == 'ß' || b.toUpperCase() == b ? b : b.toUpperCase() + b;
 
 /// Kopfbereich (Titel, Name/Datum, Buchstabenkacheln) zeichnen; gibt die y-Position darunter zurück.
 double zeichneKopf(

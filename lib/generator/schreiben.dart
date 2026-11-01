@@ -94,7 +94,29 @@ const _glyphen = <String, (double, String)>{
   'Ä': (1.4, 'M .7 2 L 0 0; M .7 2 L 1.4 0; M .25 .7 L 1.15 .7; P .45 2.35; P .95 2.35'),
   'Ö': (2, 'A 1 1 1 1 90 450; P .75 2.35; P 1.25 2.35'),
   'Ü': (1.2, 'M 0 2 L 0 .7 A .6 .7 .6 .7 180 360 L 1.2 2; P .35 2.35; P .85 2.35'),
+  // Ziffern reichen bis zur Oberlinie.
+  '0': (1.1, 'A .55 1 .55 1 90 450'),
+  '1': (0.6, 'M 0 1.4 L .6 2 L .6 0'),
+  '2': (1, 'A .5 1.5 .5 .5 160 -30 L 0 0 L 1 0'),
+  '3': (1, 'A .5 1.5 .45 .5 150 -90 A .5 .5 .5 .5 90 -150'),
+  '4': (1, 'M .7 2 L 0 .6 L 1 .6; M .75 1.4 L .75 0'),
+  '5': (1, 'M .9 2 L .12 2 L .04 .94 A .45 .6 .5 .6 145 -150'),
+  '6': (1, 'M .8 2 L .05 .55 A .5 .55 .45 .55 180 540'),
+  '7': (1, 'M 0 2 L 1 2 L .35 0'),
+  '8': (1, 'A .5 1.5 .4 .5 10 270 A .5 .5 .5 .5 90 -270 A .5 1.5 .4 .5 270 370'),
+  '9': (0.95, 'A .5 1.45 .45 .55 0 360 L .9 0'),
 };
+
+const alleZiffern = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+/// Zeilen für das Zahlen-Schreibblatt: jede gewählte Ziffer eine Zeile,
+/// wiederholt bis die Seite voll ist.
+List<String> zahlenZeilen(List<String> ziffern) {
+  final gewaehlt = alleZiffern.where(ziffern.contains).toList();
+  if (gewaehlt.isEmpty) return [];
+  final anzahl = (gewaehlt.length / schreibZeilenProSeite).ceil() * schreibZeilenProSeite;
+  return [for (var i = 0; i < anzahl; i++) gewaehlt[i % gewaehlt.length]];
+}
 
 class _Strich {
   _Strich(this.punkte, {this.istPunkt = false});
@@ -223,21 +245,57 @@ void _lineatur(PdfGraphics g, double x0, double x1, double grund, double u) {
   linie(grund - u, _Farben.linie, 0.6);
 }
 
-/// Erstellt das Schreibblatt (eine Seite je 10 Zeilen).
+/// Erstellt das Schreibblatt für Buchstaben (eine Seite je 8 Zeilen).
 Future<Uint8List> erstelleSchreibPdf(
   List<String> buchstaben,
   SchreibForm form,
   ByteData schrift,
   ByteData schriftFett,
 ) {
-  final zeilen = schreibZeilen(buchstaben, form);
-  final doc = PdfDocument();
   final sortiert = sortiereBuchstaben(buchstaben);
-  PdfInfo(
-    doc,
-    title: 'Mein Schreibblatt – ${sortiert.map((b) => b.toUpperCase()).join(' ')}',
-    creator: 'Lernapp',
+  return _schreibPdf(
+    schreibZeilen(buchstaben, form),
+    sortiert,
+    schrift,
+    schriftFett,
+    titel: 'Mein Schreibblatt',
+    label: 'Diese Buchstaben übe ich:',
+    hinweis: 'Fahre die grauen Buchstaben nach. Dann schreibe die Zeile allein fertig!',
+    pdfTitel: 'Mein Schreibblatt – ${sortiert.map((b) => b.toUpperCase()).join(' ')}',
   );
+}
+
+/// Erstellt das Schreibblatt für Ziffern (eine Seite je 8 Zeilen).
+Future<Uint8List> erstelleZahlenSchreibPdf(
+  List<String> ziffern,
+  ByteData schrift,
+  ByteData schriftFett,
+) {
+  final gewaehlt = alleZiffern.where(ziffern.contains).toList();
+  return _schreibPdf(
+    zahlenZeilen(ziffern),
+    gewaehlt,
+    schrift,
+    schriftFett,
+    titel: 'Ich schreibe Zahlen',
+    label: 'Diese Zahlen übe ich:',
+    hinweis: 'Fahre die grauen Zahlen nach. Dann schreibe die Zeile allein fertig!',
+    pdfTitel: 'Ich schreibe Zahlen – ${gewaehlt.join(' ')}',
+  );
+}
+
+Future<Uint8List> _schreibPdf(
+  List<String> zeilen,
+  List<String> kacheln,
+  ByteData schrift,
+  ByteData schriftFett, {
+  required String titel,
+  required String label,
+  required String hinweis,
+  required String pdfTitel,
+}) {
+  final doc = PdfDocument();
+  PdfInfo(doc, title: pdfTitel, creator: 'Lernapp');
   final normal = PdfTtfFont(doc, schrift), fett = PdfTtfFont(doc, schriftFett);
   final format = PdfPageFormat.a4;
   final breite = format.width, hoehe = format.height;
@@ -247,13 +305,13 @@ Future<Uint8List> erstelleSchreibPdf(
     final z = Zeichner(PdfPage(doc, pageFormat: format).getGraphics(), normal, fett);
     final y = zeichneKopf(
       z,
-      sortiert,
+      kacheln,
       breite,
       hoehe,
       rand,
-      titel: 'Mein Schreibblatt',
-      label: 'Diese Buchstaben übe ich:',
-      hinweis: 'Fahre die grauen Buchstaben nach. Dann schreibe die Zeile allein fertig!',
+      titel: titel,
+      label: label,
+      hinweis: hinweis,
     );
     final hoeheZeile = (y - rand - 4 * mm) / schreibZeilenProSeite;
     // Drei Bänder plus Abstand zur nächsten Zeile.

@@ -6,14 +6,13 @@ import 'package:lernapp/daten/speicher.dart';
 import 'package:lernapp/main.dart';
 
 void main() {
-  testWidgets('Start: Deutsch aktiv, Mathe kommt bald; Profil anlegen', (tester) async {
+  testWidgets('Start: Deutsch und Mathe; Profil anlegen', (tester) async {
     final ordner = Directory.systemTemp.createTempSync('lernapp');
     addTearDown(() => ordner.deleteSync(recursive: true));
     final daten = (await tester.runAsync(() => AppDaten.laden(ordner)))!;
 
     await tester.pumpWidget(LernApp(daten: daten));
     expect(find.text('Mathe'), findsOneWidget);
-    expect(find.text('Kommt bald'), findsOneWidget);
 
     await tester.tap(find.text('Deutsch'));
     await tester.pumpAndSettle();

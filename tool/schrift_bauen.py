@@ -17,7 +17,7 @@ from fontTools import subset
 from fontTools.ttLib import TTFont
 
 NAME = "Lernapp Schrift"
-ZEICHEN = "U+0020-007E,U+00A0-00FF,U+0152-0153,U+2013-2014,U+2018-201E,U+2022,U+2026,U+20AC"
+ZEICHEN = "U+0020-007E,U+00A0-00FF,U+0152-0153,U+2013-2014,U+2018-201E,U+2022,U+2026,U+20AC,U+2212"
 
 
 def baue(quelle: Path, ziel: Path, stil: str) -> None:

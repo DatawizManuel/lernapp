@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../daten/speicher.dart';
 import 'deutsch.dart';
+import 'mathe.dart';
 
 /// Großer Menüpunkt, wie er auf Start- und Fachseite verwendet wird.
 class MenuePunkt extends StatelessWidget {
@@ -83,10 +84,13 @@ class StartSeite extends StatelessWidget {
                     .push(MaterialPageRoute(builder: (_) => DeutschSeite(daten: daten))),
           ),
           const SizedBox(height: 12),
-          const MenuePunkt(
+          MenuePunkt(
             titel: 'Mathe',
-            untertitel: 'Kommt bald',
+            untertitel: 'Zahlen schreiben und Rechenblätter erstellen',
             icon: Icons.calculate_outlined,
+            onTap: () =>
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (_) => MatheSeite(daten: daten))),
           ),
         ],
       ),

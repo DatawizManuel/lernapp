@@ -8,7 +8,8 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
-import '../generator/schreiben.dart' show SchreibForm;
+import '../generator/rechnen.dart' show Rechenart, zahlenraumMax, zahlenraumMin;
+import '../generator/schreiben.dart' show SchreibForm, alleZiffern;
 
 class Profil {
   Profil({
@@ -18,8 +19,13 @@ class Profil {
     List<String>? ohne,
     this.freiOhne = '',
     this.schreibForm = SchreibForm.beide,
+    List<String>? ziffern,
+    this.zahlenraum = zahlenraumMin,
+    List<Rechenart>? rechenarten,
   }) : buchstaben = buchstaben ?? [],
-       ohne = ohne ?? [];
+       ohne = ohne ?? [],
+       ziffern = ziffern ?? [...alleZiffern],
+       rechenarten = rechenarten ?? [Rechenart.plus];
 
   factory Profil.fromJson(Map<String, dynamic> j) => Profil(
     id: j['id'] as String,
@@ -28,6 +34,11 @@ class Profil {
     ohne: List<String>.from(j['ohne'] as List? ?? []),
     freiOhne: j['freiOhne'] as String? ?? '',
     schreibForm: SchreibForm.values.asNameMap()[j['schreibForm']] ?? SchreibForm.beide,
+    ziffern: j['ziffern'] == null ? null : List<String>.from(j['ziffern'] as List),
+    zahlenraum: ((j['zahlenraum'] as int?) ?? zahlenraumMin).clamp(zahlenraumMin, zahlenraumMax),
+    rechenarten: j['rechenarten'] == null
+        ? null
+        : [for (final n in j['rechenarten'] as List) ?Rechenart.values.asNameMap()[n]],
   );
 
   final String id;
@@ -46,6 +57,14 @@ class Profil {
   /// Groß- und/oder Kleinbuchstaben auf dem Schreibblatt.
   SchreibForm schreibForm;
 
+  /// Ziffern für das Zahlen-Schreibblatt.
+  List<String> ziffern;
+
+  /// Zahlenraum (größtes Ergebnis) und Rechenarten; gelten für alle
+  /// Mathe-Übungen des Kindes.
+  int zahlenraum;
+  List<Rechenart> rechenarten;
+
   Map<String, dynamic> toJson() => {
     'id': id,
     'name': name,
@@ -53,11 +72,26 @@ class Profil {
     'ohne': ohne,
     'freiOhne': freiOhne,
     'schreibForm': schreibForm.name,
+    'ziffern': ziffern,
+    'zahlenraum': zahlenraum,
+    'rechenarten': [for (final r in rechenarten) r.name],
   };
 }
 
 /// Art eines gespeicherten Blatts.
-enum BlattArt { lesen, schreiben }
+enum BlattArt {
+  lesen('Leseblätter', 'Leseblatt', 'Leseblätter'),
+  schreiben('Schreibblätter', 'Schreibblatt', 'Schreibblätter'),
+  zahlen('Zahlen schreiben', 'Zahlenblatt', 'Zahlenblätter'),
+  rechnen('Rechenblätter', 'Rechenblatt', 'Rechenblätter');
+
+  const BlattArt(this.titel, this.einzahl, this.mehrzahl);
+
+  /// Überschrift der Seite.
+  final String titel;
+  final String einzahl;
+  final String mehrzahl;
+}
 
 class GespeichertesBlatt {
   GespeichertesBlatt({
@@ -67,6 +101,7 @@ class GespeichertesBlatt {
     required this.erstellt,
     required this.buchstaben,
     required this.ohne,
+    this.info,
   });
 
   factory GespeichertesBlatt.fromJson(Map<String, dynamic> j) => GespeichertesBlatt(
@@ -76,6 +111,7 @@ class GespeichertesBlatt {
     erstellt: DateTime.parse(j['erstellt'] as String),
     buchstaben: List<String>.from(j['buchstaben'] as List),
     ohne: List<String>.from(j['ohne'] as List? ?? []),
+    info: j['info'] as String?,
   );
 
   final BlattArt art;
@@ -87,6 +123,10 @@ class GespeichertesBlatt {
   final List<String> buchstaben;
   final List<String> ohne;
 
+  /// Kurzbeschreibung für die Liste (z. B. "Bis 20: Plus, Minus");
+  /// ohne Angabe werden die Buchstaben gezeigt.
+  final String? info;
+
   Map<String, dynamic> toJson() => {
     'art': art.name,
     'datei': datei,
@@ -94,6 +134,7 @@ class GespeichertesBlatt {
     'erstellt': erstellt.toIso8601String(),
     'buchstaben': buchstaben,
     'ohne': ohne,
+    if (info != null) 'info': info,
   };
 }
 
@@ -179,9 +220,10 @@ class AppDaten extends ChangeNotifier {
     Uint8List pdf, {
     required List<String> buchstaben,
     List<String> ohne = const [],
+    String? info,
   }) async {
     final jetzt = DateTime.now();
-    final praefix = art == BlattArt.lesen ? 'Leseblatt' : 'Schreibblatt';
+    final praefix = art.einzahl;
     final name =
         '${praefix}_${_dateiname(p.name)}_${jetzt.year}-${_zwei(jetzt.month)}-'
         '${_zwei(jetzt.day)}_${_zwei(jetzt.hour)}-${_zwei(jetzt.minute)}-${_zwei(jetzt.second)}.pdf';
@@ -193,6 +235,7 @@ class AppDaten extends ChangeNotifier {
       erstellt: jetzt,
       buchstaben: buchstaben,
       ohne: ohne,
+      info: info,
     );
     blaetter.add(b);
     await _indexSpeichern();

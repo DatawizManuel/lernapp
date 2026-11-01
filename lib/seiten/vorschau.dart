@@ -17,13 +17,7 @@ class VorschauSeite extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          neu
-              ? (blatt.art == BlattArt.lesen ? 'Neues Leseblatt' : 'Neues Schreibblatt')
-              : datumText(blatt.erstellt),
-        ),
-      ),
+      appBar: AppBar(title: Text(neu ? 'Neues ${blatt.art.einzahl}' : datumText(blatt.erstellt))),
       body: Column(
         children: [
           if (neu)

@@ -5,7 +5,12 @@ Gebaut mit Flutter, damit später auch eine iPhone-Version möglich ist.
 
 ## Was die App kann
 
-- **Start:** „Deutsch“ und „Mathe“ (Mathe kommt später).
+- **Start:** „Deutsch“ und „Mathe“.
+- **Deutsch → Schreibblätter:** Buchstaben als Vorlage, zweimal strichliert
+  zum Nachfahren, dann frei üben – auf Hilfslinien.
+- **Mathe → Zahlen schreiben:** wie die Schreibblätter, mit Ziffern 0–9.
+- **Mathe → Rechenblätter:** 24 Aufgaben mit Plus, Minus, Mal und/oder
+  Geteilt im Zahlenraum des Kindes (ab 20; bei 20 nur einstellige Zahlen).
 - **Deutsch → Leseblätter:** erstellt ein druckbares A4-Leseblatt mit
   Silben und Wörtern, die nur aus den Buchstaben bestehen, die das Kind
   schon kann. 10 Reihen zu je 6 Einträgen, von leicht nach schwer.
@@ -34,10 +39,12 @@ Gebaut mit Flutter, damit später auch eine iPhone-Version möglich ist.
 flutter pub get
 flutter test
 flutter build apk --release
-dart run tool/beispiel.dart a,e,i,o,u,l,s,m,r blatt.pdf ie,ei   # Beispiel-PDF ohne App
+dart run tool/beispiel.dart a,e,i,o,u,l,s,m,r blatt.pdf ie,ei   # Beispiel-PDFs ohne App
+dart run tool/schreibblatt.dart m,a,l blatt.pdf
+dart run tool/mathe.dart rechnen plus,minus 20 blatt.pdf
 ```
 
-- `lib/generator/` – Leseblatt-Generator (Inhalt + PDF), ohne Flutter testbar
+- `lib/generator/` – Generatoren für alle Blätter (Inhalt + PDF), ohne Flutter testbar
 - `lib/daten/` – Profile und gespeicherte Blätter (JSON/PDF im App-Ordner)
 - `lib/seiten/` – Bildschirme
 - `.github/workflows/apk.yml` – baut bei jedem Push die APK und stellt sie

@@ -6,8 +6,13 @@ Gebaut mit Flutter, damit später auch eine iPhone-Version möglich ist.
 ## Was die App kann
 
 - **Start:** „Deutsch“ und „Mathe“.
+- **Deutsch → Wörter und Sätze:** Leseblatt mit Wortreihen und kurzen Sätzen
+  (mit Silbenbögen), nur aus bekannten Buchstaben.
+- **Deutsch → Lückenwörter:** in jedem Wort fehlt ein Buchstabe; drei
+  Buchstaben stehen zur Auswahl.
 - **Deutsch → Schreibblätter:** Buchstaben als Vorlage, zweimal strichliert
-  zum Nachfahren, dann frei üben – auf Hilfslinien.
+  zum Nachfahren, dann frei üben – auf Hilfslinien. Auch als leeres Blatt
+  nur mit Hilfslinien.
 - **Mathe → Zahlen schreiben:** wie die Schreibblätter, mit Ziffern 0–9.
 - **Mathe → Rechenblätter:** 24 Aufgaben mit Plus, Minus, Mal und/oder
   Geteilt im Zahlenraum des Kindes (ab 20; bei 20 nur einstellige Zahlen).
@@ -41,6 +46,7 @@ flutter test
 flutter build apk --release
 dart run tool/beispiel.dart a,e,i,o,u,l,s,m,r blatt.pdf ie,ei   # Beispiel-PDFs ohne App
 dart run tool/schreibblatt.dart m,a,l blatt.pdf
+dart run tool/lesen.dart saetze a,e,i,o,u,l,s,m,r,n,t blatt.pdf   # auch: luecken, linien
 dart run tool/mathe.dart rechnen plus,minus 20 blatt.pdf
 ```
 

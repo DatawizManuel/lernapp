@@ -83,7 +83,9 @@ enum BlattArt {
   lesen('Leseblätter', 'Leseblatt', 'Leseblätter'),
   schreiben('Schreibblätter', 'Schreibblatt', 'Schreibblätter'),
   zahlen('Zahlen schreiben', 'Zahlenblatt', 'Zahlenblätter'),
-  rechnen('Rechenblätter', 'Rechenblatt', 'Rechenblätter');
+  rechnen('Rechenblätter', 'Rechenblatt', 'Rechenblätter'),
+  saetze('Wörter und Sätze', 'Satzblatt', 'Satzblätter'),
+  luecken('Lückenwörter', 'Lückenblatt', 'Lückenblätter');
 
   const BlattArt(this.titel, this.einzahl, this.mehrzahl);
 

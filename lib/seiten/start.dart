@@ -77,7 +77,7 @@ class StartSeite extends StatelessWidget {
         children: [
           MenuePunkt(
             titel: 'Deutsch',
-            untertitel: 'Leseblätter und Schreibblätter erstellen',
+            untertitel: 'Lesen, Schreiben und Lückenwörter',
             icon: Icons.menu_book_outlined,
             onTap: () =>
                 Navigator.of(context)

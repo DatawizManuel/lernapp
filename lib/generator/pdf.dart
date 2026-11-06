@@ -134,7 +134,7 @@ double zeichneKopf(
   z.linie(x0 + 14 * mm, oben - 30, breite - rand, oben - 30);
 
   // gelernte Buchstaben als bunte Kacheln, bei vielen Buchstaben umgebrochen
-  var y = oben - 58;
+  var y = buchstaben.isEmpty && label.isEmpty ? oben - 36 : oben - 58;
   z.text(label, rand, y + 6, 13, BlattFarben.text);
   final xStart = rand + z.breite(label, 13) + 4 * mm;
   const kachel = 10.5 * mm, abstand = 1.6 * mm;
@@ -161,7 +161,8 @@ double zeichneKopf(
   return y - 30;
 }
 
-void _reihen(
+/// Reihen mit Wörtern oder Silben (je Reihe ein Band mit Nummer und Stern).
+void zeichneReihen(
   Zeichner z,
   List<List<String>> reihen,
   int nummerStart,
@@ -238,7 +239,7 @@ Future<Uint8List> erstellePdf(LernblattInhalt inhalt, ByteData schrift, ByteData
   if (inhalt.silben.isNotEmpty) {
     y -= titelHoehe;
     z.text('Silben lesen', rand, y + 5, 13, BlattFarben.silbenAkzent, istFett: true);
-    _reihen(
+    zeichneReihen(
       z,
       inhalt.silben,
       1,
@@ -254,7 +255,7 @@ Future<Uint8List> erstellePdf(LernblattInhalt inhalt, ByteData schrift, ByteData
   if (inhalt.woerter.isNotEmpty) {
     y -= titelHoehe;
     z.text('Wörter lesen', rand, y + 5, 13, BlattFarben.woerterAkzent, istFett: true);
-    _reihen(
+    zeichneReihen(
       z,
       inhalt.woerter,
       inhalt.silben.length + 1,

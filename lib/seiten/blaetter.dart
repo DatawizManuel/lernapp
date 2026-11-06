@@ -4,8 +4,10 @@ import 'package:printing/printing.dart';
 
 import '../daten/speicher.dart';
 import '../generator/inhalt.dart';
+import '../generator/luecken.dart';
 import '../generator/pdf.dart';
 import '../generator/rechnen.dart';
+import '../generator/saetze.dart';
 import '../generator/schreiben.dart';
 import 'profile.dart';
 import 'vorschau.dart';
@@ -53,10 +55,11 @@ class BlattSeite extends StatelessWidget {
                 : TabBarView(
                     children: [
                       switch (art) {
-                        BlattArt.lesen => _NeuesLeseblatt(
-                          key: ValueKey(profil.id),
+                        BlattArt.lesen || BlattArt.saetze || BlattArt.luecken => _NeuesLeseblatt(
+                          key: ValueKey((profil.id, art)),
                           daten: daten,
                           profil: profil,
+                          art: art,
                         ),
                         BlattArt.schreiben => _NeuesSchreibblatt(
                           key: ValueKey(profil.id),
@@ -491,6 +494,18 @@ class _NeuesSchreibblattState extends State<_NeuesSchreibblatt> with _Erstellen 
     );
   }
 
+  Future<GespeichertesBlatt> _linienSpeichern() async {
+    final (schrift, fett) = await _schriften();
+    final pdf = await erstelleLinienPdf(schrift, fett);
+    return widget.daten.speichereBlatt(
+      p,
+      BlattArt.schreiben,
+      pdf,
+      buchstaben: const [],
+      info: 'Nur Hilfslinien',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
@@ -528,6 +543,19 @@ class _NeuesSchreibblattState extends State<_NeuesSchreibblatt> with _Erstellen 
                 'Jede Zeile beginnt mit dem Buchstaben als Vorlage, danach zweimal '
                 'strichliert zum Nachfahren. Der Rest der Zeile ist frei zum Üben.',
               ),
+              const Divider(height: 32),
+              Text('Leeres Blatt', style: text.titleMedium),
+              const SizedBox(height: 4),
+              const Text('Nur Hilfslinien, ohne Vorlage – zum freien Schreiben.'),
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.horizontal_rule),
+                  label: const Text('Blatt mit Hilfslinien erstellen'),
+                  onPressed: laeuft ? null : () => erstellen(widget.daten, _linienSpeichern),
+                ),
+              ),
             ],
           ),
         ),
@@ -544,11 +572,14 @@ class _NeuesSchreibblattState extends State<_NeuesSchreibblatt> with _Erstellen 
   }
 }
 
+/// Lese-Übungen mit Buchstaben und Ausschlüssen: Leseblatt (Silben und
+/// Wörter), Wörter und Sätze, Lückenwörter.
 class _NeuesLeseblatt extends StatefulWidget {
-  const _NeuesLeseblatt({super.key, required this.daten, required this.profil});
+  const _NeuesLeseblatt({super.key, required this.daten, required this.profil, required this.art});
 
   final AppDaten daten;
   final Profil profil;
+  final BlattArt art;
 
   @override
   State<_NeuesLeseblatt> createState() => _NeuesLeseblattState();
@@ -574,24 +605,73 @@ class _NeuesLeseblattState extends State<_NeuesLeseblatt> with _Erstellen {
   bool get _hatMitlaut => p.buchstaben.any((b) => !(vokale + umlaute).contains(b) && b != 'ß');
 
   Future<GespeichertesBlatt> _speichern() async {
-    final inhalt = erzeugeInhalt(p.buchstaben, ohne: p.ohne, freiOhne: p.freiOhne);
     final (schrift, fett) = await _schriften();
-    final pdf = await erstellePdf(inhalt, schrift, fett);
+    final regeln = AusschlussRegeln(p.ohne, frei: p.freiOhne);
+    final pdf = switch (widget.art) {
+      BlattArt.saetze => await erstelleSatzPdf(
+        erzeugeSatzblatt(p.buchstaben, ohne: p.ohne, freiOhne: p.freiOhne),
+        schrift,
+        fett,
+      ),
+      BlattArt.luecken => await erstelleLueckenPdf(
+        p.buchstaben,
+        erzeugeLueckenwoerter(p.buchstaben, ohne: p.ohne, freiOhne: p.freiOhne),
+        regeln.beschreibungen,
+        schrift,
+        fett,
+      ),
+      _ => await erstellePdf(
+        erzeugeInhalt(p.buchstaben, ohne: p.ohne, freiOhne: p.freiOhne),
+        schrift,
+        fett,
+      ),
+    };
     return widget.daten.speichereBlatt(
       p,
-      BlattArt.lesen,
+      widget.art,
       pdf,
-      buchstaben: inhalt.buchstaben,
-      ohne: inhalt.ausschluesse,
+      buchstaben: sortiereBuchstaben(p.buchstaben),
+      ohne: regeln.beschreibungen,
     );
+  }
+
+  /// Hinweis unter der Auswahl und ob das Blatt erstellt werden kann.
+  (String, bool) _stand() {
+    if (!_hatVokal || !_hatMitlaut) {
+      return ('Wähle mindestens einen Selbstlaut (A, E, I, O, U) und einen Mitlaut.', false);
+    }
+    final erlaubt = p.buchstaben.toSet();
+    final regeln = AusschlussRegeln(p.ohne, frei: p.freiOhne);
+    final woerter = passendeWoerter(erlaubt, regeln);
+    switch (widget.art) {
+      case BlattArt.saetze:
+        final saetze = passendeSaetze(erlaubt, regeln).length;
+        return (
+          'Passende Wörter: ${woerter.length}, passende Sätze: $saetze'
+              '${saetze < satzblattSaetzeMax ? ' (mit mehr Buchstaben, z. B. N und T, gibt es viel mehr Sätze)' : ''}',
+          woerter.isNotEmpty || saetze > 0,
+        );
+      case BlattArt.luecken:
+        final anzahl = woerter.where((w) => w.replaceAll('-', '').length >= 3).length;
+        return (
+          anzahl == 0
+              ? 'Mit diesen Buchstaben gibt es noch keine passenden Wörter.'
+              : 'Passende Wörter: $anzahl',
+          anzahl > 0,
+        );
+      default:
+        return (
+          'Passende Wörter: ${woerter.length}'
+              '${woerter.length < 6 ? ' (fehlende Reihen werden mit Silben aufgefüllt)' : ''}',
+          true,
+        );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
-    final regeln = AusschlussRegeln(p.ohne, frei: p.freiOhne);
-    final anzahlWoerter = passendeWoerter(p.buchstaben.toSet(), regeln).length;
-    final bereit = _hatVokal && _hatMitlaut;
+    final (hinweis, bereit) = _stand();
 
     return Column(
       children: [
@@ -646,11 +726,8 @@ class _NeuesLeseblattState extends State<_NeuesLeseblatt> with _Erstellen {
           ),
         ),
         _ErstellenLeiste(
-          hinweis: bereit
-              ? 'Passende Wörter: $anzahlWoerter'
-                    '${anzahlWoerter < 6 ? ' (fehlende Reihen werden mit Silben aufgefüllt)' : ''}'
-              : 'Wähle mindestens einen Selbstlaut (A, E, I, O, U) und einen Mitlaut.',
-          knopf: 'Leseblatt erstellen',
+          hinweis: hinweis,
+          knopf: '${widget.art.einzahl} erstellen',
           laeuft: laeuft,
           onPressed: bereit ? () => erstellen(widget.daten, _speichern) : null,
         ),

@@ -284,6 +284,18 @@ Future<Uint8List> erstelleZahlenSchreibPdf(
   );
 }
 
+/// Leeres Blatt nur mit Hilfslinien (8 Zeilen), zum freien Schreiben.
+Future<Uint8List> erstelleLinienPdf(ByteData schrift, ByteData schriftFett) => _schreibPdf(
+  List.filled(schreibZeilenProSeite, ''),
+  const [],
+  schrift,
+  schriftFett,
+  titel: 'Mein Schreibblatt',
+  label: '',
+  hinweis: 'Schreibe schön auf den Linien. Zeile fertig? Male den Stern an!',
+  pdfTitel: 'Mein Schreibblatt – Hilfslinien',
+);
+
 Future<Uint8List> _schreibPdf(
   List<String> zeilen,
   List<String> kacheln,
@@ -324,11 +336,13 @@ Future<Uint8List> _schreibPdf(
       final grund = oben - 2 * u;
       _lineatur(z.g, rand, x1, grund, u);
 
-      final w = zeichenBreite(zeichen) * u;
-      var x = rand + 0.6 * u;
-      for (var k = 0; k < 3; k++) {
-        _zeichen(z.g, zeichen, x, grund, u, vorlage: k == 0);
-        x += w + 1.1 * u;
+      if (zeichen.isNotEmpty) {
+        final w = zeichenBreite(zeichen) * u;
+        var x = rand + 0.6 * u;
+        for (var k = 0; k < 3; k++) {
+          _zeichen(z.g, zeichen, x, grund, u, vorlage: k == 0);
+          x += w + 1.1 * u;
+        }
       }
 
       z.g
@@ -337,13 +351,15 @@ Future<Uint8List> _schreibPdf(
       z.stern(breite - rand - sternBreite / 2, grund + 0.5 * u, 4.2 * mm);
     }
 
-    z.textRechts(
-      'Grüne Punkte zeigen, wo du anfängst.',
-      breite - rand,
-      rand - 6 * mm + 4,
-      8,
-      BlattFarben.linie,
-    );
+    if (kacheln.isNotEmpty) {
+      z.textRechts(
+        'Grüne Punkte zeigen, wo du anfängst.',
+        breite - rand,
+        rand - 6 * mm + 4,
+        8,
+        BlattFarben.linie,
+      );
+    }
   }
   return doc.save();
 }

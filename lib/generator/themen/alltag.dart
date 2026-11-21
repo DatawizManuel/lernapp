@@ -1,0 +1,148 @@
+import 'themen.dart';
+
+const _a = 'Alltag und Kinderwelt';
+const _s = 'Sport, Musik und Hobbys';
+
+const themenAlltag = [
+  Thema(
+    'familie',
+    'Familie',
+    _a,
+    'Ma-ma Pa-pa O-ma O-pa Bru-der Schwes-ter Ba-by Tan-te On-kel Fa-mi-lie Haus Tisch Es-sen So-fa ku-scheln lieb la-chen Mi-a Le-o Ti-mo Li-sa',
+    'Ma-ma ist lieb.|O-ma und O-pa sind da.|Le-o ist mein Bru-der.|Mi-a ist mei-ne Schwes-ter.|Das Ba-by schläft.|Pa-pa kocht.|Wir sit-zen am Tisch.|Tan-te Li-sa kommt.|Wir ku-scheln am So-fa.',
+  ),
+  Thema(
+    'schule',
+    'Kindergarten und Schule',
+    _a,
+    'Schu-le Kin-der-gar-ten Ta-fel Krei-de Heft Buch Stift Blei-stift Far-be Ra-dier-gum-mi Schul-ta-sche Leh-re-rin Pau-se Klas-se Tisch Ses-sel le-sen ma-len rech-nen Jau-se',
+    'Ich le-se ein Buch.|Ich ma-le ein Bild.|Die Ta-fel ist grün.|In der Pau-se spie-len wir.|Die Leh-re-rin ist nett.|Mein Heft ist blau.|Ich ha-be ei-ne Jau-se.|Ich kann schon le-sen!',
+  ),
+  Thema(
+    'freunde',
+    'Freunde',
+    _a,
+    'Freund Freun-din Freun-de spie-len la-chen tei-len hel-fen Ball Ver-steck Fan-gen Spiel Ge-heim-nis Brief Ge-schenk Mi-a Le-a Le-o E-mil zu-sam-men Hand',
+    'Le-o ist mein Freund.|Mi-a ist mei-ne Freun-din.|Wir spie-len Ball.|Wir la-chen.|Wir tei-len das Eis.|Freun-de hel-fen.|Wir spie-len Ver-ste-cken.|E-mil und Le-a sind da.',
+  ),
+  Thema(
+    'essen',
+    'Essen und Kochen',
+    _a,
+    'Nu-del Nu-deln Sup-pe Reis Brot Ei But-ter Kä-se Wurst Sa-la-mi Löf-fel Ga-bel Mes-ser Tel-ler Topf Herd ko-chen es-sen Piz-za Pa-la-tschin-ken Schnit-zel Salz',
+    'Ich es-se Nu-deln.|Die Sup-pe ist heiß.|O-ma kocht Reis.|Das Brot ist frisch.|Ich mag Sa-la-mi.|Der Löf-fel liegt am Tisch.|Pa-pa macht Piz-za.|Wir es-sen Pa-la-tschin-ken.',
+  ),
+  Thema(
+    'obst',
+    'Obst und Gemüse',
+    _a,
+    'Ap-fel Bir-ne Ba-na-ne Ma-ril-le Me-lo-ne Erd-bee-re Kir-sche Trau-be Zi-tro-ne O-ran-ge Pflau-me Ki-wi Ka-rot-te To-ma-te Gur-ke Sa-lat Mais Erb-se Kar-tof-fel Pa-pri-ka',
+    'Der Ap-fel ist rot.|Die Ba-na-ne ist gelb.|Die Ma-ril-le ist süß.|Die Me-lo-ne ist groß.|Ich mag Erd-bee-ren.|Die Ka-rot-te ist o-ran-ge.|Die Gur-ke ist grün.|Die Zi-tro-ne ist sau-er.',
+  ),
+  Thema(
+    'suesses',
+    'Süßigkeiten und Eis',
+    _a,
+    'Eis Ku-chen Tor-te Kek-se Bon-bon Scho-ko-la-de Lol-li Gum-mi-bär Sah-ne Zu-cker Ho-nig Waf-fel Krap-fen Pud-ding Muf-fin süß le-cker Ku-gel Stiel-eis',
+    'Ich es-se ein Eis.|Das Eis ist le-cker.|Der Ku-chen ist süß.|Ich mag Scho-ko-la-de.|Der Lol-li ist rot.|Auf dem Ku-chen ist Sah-ne.|Ich ha-be zwei Ku-geln Eis.|Die Waf-fel ist knusp-rig.',
+  ),
+  Thema(
+    'spielplatz',
+    'Spielplatz',
+    _a,
+    'Rut-sche Schau-kel Sand Sand-kis-te Wip-pe Klet-ter-turm Ball Schau-fel Kü-bel Ei-mer Bank Seil spie-len rut-schen schau-keln klet-tern Freun-de Ka-rus-sell',
+    'Ich rut-sche.|Die Schau-kel ist hoch.|Im Sand ist ein Ei-mer.|Wir spie-len Ball.|Ich klet-te-re auf den Turm.|Die Wip-pe geht auf und ab.|Ma-ma sitzt auf der Bank.|Das Ka-rus-sell dreht sich.',
+  ),
+  Thema(
+    'kleidung',
+    'Kleidung',
+    _a,
+    'Ho-se Ja-cke Müt-ze Schal Schuh Schu-he Stie-fel So-cke Rock Kleid Hemd Pul-li Hut Hand-schu-he Ho-sen-trä-ger Re-gen-ja-cke rot blau warm an-zie-hen Knopf',
+    'Die Ho-se ist blau.|Die Müt-ze ist warm.|Ich zie-he die Ja-cke an.|Die Schu-he sind neu.|Der Schal ist lang.|Das Kleid ist ro-sa.|Ich tra-ge Stie-fel.|Der Pul-li ist weich.',
+  ),
+  Thema(
+    'koerper',
+    'Körper',
+    _a,
+    'Kopf Haa-re Au-ge Au-gen Na-se Mund Ohr Oh-ren Zahn Zäh-ne Hals Arm Hand Fin-ger Bauch Bein Knie Fuß Ze-he Herz Rü-cken',
+    'Ich ha-be zwei Au-gen.|Die Na-se ist in der Mit-te.|Ich ha-be zehn Fin-ger.|Ich put-ze die Zäh-ne.|Mein Bauch ist voll.|Ich ha-be zwei Oh-ren.|Mein Herz schlägt.|Das Knie tut weh.',
+  ),
+  Thema(
+    'gefuehle',
+    'Gefühle',
+    _a,
+    'froh lus-tig trau-rig mü-de wü-tend mu-tig Angst Freu-de Glück la-chen wei-nen lä-cheln ku-scheln Trä-ne Herz Lie-be lieb stolz sau-er',
+    'Ich bin froh.|Mi-a ist mü-de.|Le-o ist trau-rig.|Ich bin mu-tig.|Wir la-chen.|Ich ha-be dich lieb.|Ich bin stolz.|Nach dem Wei-nen ku-scheln wir.',
+  ),
+  Thema(
+    'zuhause',
+    'Zuhause',
+    _a,
+    'Haus Woh-nung Tür Fens-ter Bett Tisch Ses-sel So-fa Lam-pe Kü-che Bad Zim-mer Dach Gar-ten Trep-pe Kis-sen Tep-pich Re-gal Schrank',
+    'Das ist mein Haus.|Die Tür ist rot.|Ich schla-fe im Bett.|Die Lam-pe ist an.|Wir sit-zen am So-fa.|In der Kü-che ist es warm.|Im Bad ist die Wan-ne.|Mein Zim-mer ist bunt.',
+  ),
+  Thema(
+    'einkaufen',
+    'Einkaufen',
+    _a,
+    'Ge-schäft Su-per-markt Korb Wa-gen Kas-se Geld Mün-ze Brot Milch Ei-er Ap-fel Kä-se Sa-la-mi Ta-sche Lis-te kau-fen zah-len Re-gal Bon',
+    'Wir kau-fen Brot.|Der Korb ist voll.|Ma-ma zahlt an der Kas-se.|Ich schie-be den Wa-gen.|Wir kau-fen Milch und Ei-er.|Auf der Lis-te steht Kä-se.|Die Ta-sche ist schwer.|Ich ha-be ei-ne Mün-ze.',
+  ),
+  Thema(
+    'baeckerei',
+    'Bauernmarkt und Bäckerei',
+    _a,
+    'Bä-cke-rei Bä-cker Brot Sem-mel Kip-ferl Bre-zel Mehl Teig O-fen Ku-chen Markt Stand Ho-nig Kä-se Ei-er Ap-fel Kar-tof-fel frisch ba-cken',
+    'Das Brot ist frisch.|Die Sem-mel ist knusp-rig.|Der Bä-cker backt Brot.|Im O-fen ist ein Ku-chen.|Am Markt gibt es Ho-nig.|Ich kau-fe ein Kip-ferl.|Der Teig ist weich.|O-ma kauft Ei-er am Markt.',
+  ),
+  Thema(
+    'arzt',
+    'Ärztin und Krankenhaus',
+    _a,
+    'Ärz-tin Arzt Pfle-ger Pfle-ge-rin Pflas-ter Ver-band Sprit-ze Fie-ber Hus-ten Schnup-fen Tee Bett Kran-ken-haus Ret-tung ge-sund krank weh Bauch Me-di-zin Ther-mo-me-ter',
+    'Ich bin krank.|Ich ha-be Fie-ber.|Die Ärz-tin hilft mir.|Ich be-kom-me ein Pflas-ter.|Ich trin-ke Tee.|Ich blei-be im Bett.|Bald bin ich ge-sund.|Das Knie tut weh.',
+  ),
+  // Sport, Musik und Hobbys
+  Thema(
+    'fussball',
+    'Fußball',
+    _s,
+    'Fuß-ball Ball Tor Tor-mann Tor-frau Team Mann-schaft Ra-sen Pfei-fe Trai-ner Tri-kot Schuh Schu-he schie-ßen lau-fen Sieg Po-kal Fans El-fer Spiel',
+    'Ich schie-ße ein Tor.|Tor, Tor, Tor!|Der Ball ist rund.|Mi-a ist im Tor.|Das Team ge-winnt.|Der Ra-sen ist grün.|Der Trai-ner pfeift.|Wir ha-ben ei-nen Po-kal.',
+  ),
+  Thema(
+    'schwimmen',
+    'Schwimmen',
+    _s,
+    'Was-ser Bad Be-cken Schwimm-bad Rut-sche Ring Schwimm-ring Ba-de-ho-se Ba-de-an-zug Hand-tuch Bril-le tau-chen schwim-men sprin-gen Brett nass Du-sche See Meer',
+    'Ich schwim-me.|Das Was-ser ist nass.|Ich tau-che.|Ich sprin-ge ins Was-ser.|Die Rut-sche ist lang.|Ich ha-be ei-nen Ring.|Das Hand-tuch ist weich.|Wir ge-hen ins Bad.',
+  ),
+  Thema(
+    'ski',
+    'Skifahren und Rodeln',
+    _s,
+    'Ski Schnee Berg Lift Pis-te Helm Bril-le Stock Stö-cke Schlit-ten Ro-del Bob Müt-ze Hand-schuh kalt ro-deln fah-ren Hüt-te Ka-ka-o Schnee-ball',
+    'Ich fah-re Ski.|Der Schnee ist weiß.|Wir fah-ren mit dem Lift.|Ich ha-be ei-nen Helm.|Der Schlit-ten ist schnell.|Wir ro-deln den Berg hin-un-ter.|In der Hüt-te trin-ken wir Ka-ka-o.|Es ist kalt.',
+  ),
+  Thema(
+    'radfahren',
+    'Radfahren',
+    _s,
+    'Rad Fahr-rad Rol-ler Helm Klin-gel Rei-fen Sat-tel Brem-se Pe-dal Ket-te Licht Weg Stra-ße Am-pel fah-ren brem-sen klin-geln Lauf-rad Tour',
+    'Ich fah-re Rad.|Der Helm ist rot.|Die Klin-gel macht kling.|Ich brem-se.|Mein Rol-ler ist neu.|Der Rei-fen ist platt.|Wir ma-chen ei-ne Tour.|Die Am-pel ist rot.',
+  ),
+  Thema(
+    'musik',
+    'Musik',
+    _s,
+    'Mu-sik Lied Lie-der Trom-mel Gei-ge Gi-tar-re Flö-te Kla-vier Glo-cke Ras-sel Tri-an-gel Ton No-te Chor sin-gen tan-zen spie-len laut lei-se',
+    'Ich sin-ge ein Lied.|Die Trom-mel ist laut.|Die Flö-te ist lei-se.|Ma-ma spielt Gi-tar-re.|Wir tan-zen.|Die Ras-sel ras-selt.|Ich spie-le Kla-vier.|Wir sin-gen im Chor.',
+  ),
+  Thema(
+    'zirkus',
+    'Zirkus',
+    _s,
+    'Zir-kus Zelt Clown Ar-tis-tin A-kro-bat Zau-be-rer Lö-we E-le-fant Pferd Ma-ne-ge Seil Tra-pez Ball Mu-sik Na-se rot lus-tig Ap-plaus Pop-corn',
+    'Der Clown ist lus-tig.|Der Clown hat ei-ne ro-te Na-se.|Das Zelt ist groß.|Die Ar-tis-tin ist auf dem Seil.|Das Pferd tanzt.|Der Zau-be-rer zau-bert.|Wir klat-schen.|Ich es-se Pop-corn.',
+  ),
+];

@@ -1,0 +1,148 @@
+import 'themen.dart';
+
+const _f = 'Fantasie und Abenteuer';
+const _v = 'Fahrzeuge und Technik';
+
+const themenFantasie = [
+  Thema(
+    'prinzessin',
+    'Prinzessinnen',
+    _f,
+    'Prin-zes-sin Prinz Kö-nig Kö-ni-gin Kro-ne Schloss Turm Kleid Ball Tanz tan-zen Ro-se Ring Gold Spie-gel Kut-sche Pferd Fest Schuh Glas-schuh Per-le ro-sa Li-sa',
+    'Die Prin-zes-sin tanzt.|Die Kro-ne ist aus Gold.|Das Kleid ist ro-sa.|Im Schloss ist ein Ball.|Der Prinz rei-tet.|Die Kut-sche ist da.|Die Kö-ni-gin hat ei-nen Ring.|Im Turm wohnt ei-ne Prin-zes-sin.|Der Schuh ist aus Glas.',
+  ),
+  Thema(
+    'ritter',
+    'Ritter und Burgen',
+    _f,
+    'Rit-ter Burg Turm Mau-er Tor Pferd Schwert Schild Helm Rüs-tung Lan-ze Kö-nig Fah-ne Gra-ben Brü-cke Dra-che mu-tig Fest Ker-ker Tur-nier',
+    'Der Rit-ter ist mu-tig.|Die Burg hat ei-nen Turm.|Der Rit-ter hat ein Schwert.|Das Tor ist zu.|Der Rit-ter rei-tet ein Pferd.|Auf dem Turm ist ei-ne Fah-ne.|Der Helm glänzt.|Der Kö-nig wohnt in der Burg.',
+  ),
+  Thema(
+    'piraten',
+    'Piraten',
+    _f,
+    'Pi-rat Pi-ra-ten Schiff Schatz Kar-te Kis-te In-sel Meer Se-gel An-ker Gold Pa-pa-gei Ka-no-ne Fah-ne Au-gen-klap-pe Ha-ken Ka-pi-tän Fern-rohr Mast Sä-bel Rat-te',
+    'Der Pi-rat ist im Boot.|Das Schiff hat ein Se-gel.|Der Schatz ist aus Gold.|Die Kar-te zeigt den Schatz.|Auf der In-sel ist ei-ne Kis-te.|Der Pa-pa-gei ist bunt.|Der Ka-pi-tän hat ein Fern-rohr.|Die Fah-ne ist schwarz.|A-hoi, Pi-ra-ten!',
+  ),
+  Thema(
+    'drachen',
+    'Drachen',
+    _f,
+    'Dra-che Dra-chen Feu-er Höh-le Ei Flü-gel Schup-pen Schwanz Rauch Gold Schatz flie-gen Rit-ter Berg grün rot Kral-len Na-se lieb Ko-kos-nuss',
+    'Der Dra-che ist grün.|Der Dra-che spuckt Feu-er.|In der Höh-le ist Gold.|Der Dra-che fliegt.|Aus dem Ei schlüpft ein Dra-che.|Der Dra-che hat Flü-gel.|Der Dra-che ist lieb.|Rauch kommt aus der Na-se.',
+  ),
+  Thema(
+    'feen',
+    'Feen und Elfen',
+    _f,
+    'Fee Fe-en El-fe El-fen Flü-gel Zau-ber Zau-ber-stab Wald Blu-me Blü-te Glit-zer Stern Ster-ne Pilz Mond Licht Tau Wunsch flie-gen',
+    'Die Fee fliegt.|Die El-fe ist klein.|Die Fee hat ei-nen Zau-ber-stab.|Im Wald le-ben El-fen.|Die Fee hat ei-nen Wunsch frei.|Die Flü-gel glit-zern.|Die El-fe sitzt auf ei-ner Blu-me.|Der Mond scheint.',
+  ),
+  Thema(
+    'einhorn',
+    'Einhörner',
+    _f,
+    'Ein-horn Horn Re-gen-bo-gen Wol-ke Mäh-ne Glit-zer Stern ro-sa li-la weiß Zau-ber Wie-se Blu-me Huf Schweif ga-lop-pie-ren Mond Fee Traum',
+    'Das Ein-horn ist weiß.|Das Ein-horn hat ein Horn.|Die Mäh-ne ist ro-sa.|Am Him-mel ist ein Re-gen-bo-gen.|Das Ein-horn kann zau-bern.|Das Ein-horn steht auf der Wie-se.|Das Ein-horn glit-zert.|Ich träu-me von ei-nem Ein-horn.',
+  ),
+  Thema(
+    'zauberer',
+    'Zauberer und Hexen',
+    _f,
+    'He-xe Zau-be-rer Be-sen Zau-ber-stab Hut Um-hang Kat-ze Ra-be Kes-sel Trank Spruch Buch Ma-gie Kür-bis Eu-le Stern Mond He-xen-haus A-bra-ka-da-bra',
+    'Die He-xe fliegt auf dem Be-sen.|Der Zau-be-rer hat ei-nen Hut.|Die He-xe hat ei-ne Kat-ze.|Im Kes-sel ist ein Trank.|Der Ra-be ist schwarz.|A-bra-ka-da-bra!|Der Zau-be-rer hat ei-nen Um-hang.|Die Eu-le sitzt auf dem Hut.',
+  ),
+  Thema(
+    'weltraum',
+    'Weltraum',
+    _f,
+    'Ra-ke-te Mond Stern Ster-ne Son-ne Pla-net Er-de Mars Welt-raum As-tro-naut Helm Ko-met U-fo Sa-tel-lit Mond-lan-dung Kra-ter lan-den star-ten Ga-la-xie',
+    'Die Ra-ke-te star-tet.|Der Mond ist rund.|Die Er-de ist blau.|Der As-tro-naut hat ei-nen Helm.|Die Ster-ne leuch-ten.|Der Mars ist rot.|Das U-fo lan-det.|Die Son-ne ist ein Stern.',
+  ),
+  Thema(
+    'meerjungfrau',
+    'Meerjungfrauen',
+    _f,
+    'Meer-jung-frau Flos-se Per-le Mu-schel Meer See Wel-le Fisch Ko-ral-le Al-ge Schloss Sand Stern See-stern Del-fin Haar sin-gen tau-chen glit-zern Ni-xe',
+    'Die Ni-xe ist im Meer.|Die Meer-jung-frau singt.|Die Mu-schel hat ei-ne Per-le.|Die Flos-se glit-zert.|Der Del-fin ist ihr Freund.|Im Meer ist ein Schloss.|Die Ni-xe hat lan-ge Haa-re.|Die Meer-jung-frau taucht.',
+  ),
+  Thema(
+    'superhelden',
+    'Superhelden',
+    _f,
+    'Held Hel-din Um-hang Mas-ke stark schnell flie-gen ret-ten Stadt Turm Kraft Blitz Stern Schild Team Bö-se-wicht hel-fen mu-tig Su-per',
+    'Der Held ist stark.|Die Hel-din fliegt.|Der Held hat ei-nen Um-hang.|Die Mas-ke ist rot.|Der Held ret-tet die Stadt.|Das Team hilft.|Die Hel-din ist schnell.|Ich bin ein Su-per-held!',
+  ),
+  Thema(
+    'roboter',
+    'Roboter',
+    _f,
+    'Ro-bo-ter Knopf Mo-tor Ar-me Bei-ne Rad Rä-der Kopf Licht Ka-bel Bat-te-rie piep pie-pen Me-tall Ma-schi-ne bau-en Werk-statt Schrau-be blin-ken Ro-bo',
+    'Der Ro-bo-ter piept.|Ro-bo hat ei-nen Knopf.|Der Ro-bo-ter hat Rä-der.|Das Licht blinkt.|Der Mo-tor brummt.|Der Ro-bo-ter hilft im Haus.|Wir bau-en ei-nen Ro-bo-ter.|Die Bat-te-rie ist leer.',
+  ),
+  Thema(
+    'gespenster',
+    'Gespenster',
+    _f,
+    'Ge-spenst Ge-spens-ter Nacht Schloss Turm Ket-te Mond Eu-le Fle-der-maus Tuch weiß hu-hu lei-se dun-kel Kel-ler Ker-ze Spuk Uhr Mit-ter-nacht',
+    'Das Ge-spenst ist weiß.|Hu-hu, ruft das Ge-spenst.|Im Schloss spukt es.|Es ist Mit-ter-nacht.|Der Mond scheint.|Die Ker-ze ist aus.|Das Ge-spenst ist lieb.|Im Kel-ler ist es dun-kel.',
+  ),
+  // Fahrzeuge und Technik
+  Thema(
+    'autos',
+    'Autos',
+    _v,
+    'Au-to Rad Rei-fen Hu-pe Mo-tor Lenk-rad Tür Tank Ben-zin Stra-ße Am-pel Stau Bus Ta-xi Last-wa-gen Gurt fah-ren hu-pen Ga-ra-ge rot schnell Park-platz',
+    'Das Au-to ist rot.|Ma-ma fährt Au-to.|Die Am-pel ist grün.|Das Au-to hat vier Rä-der.|Der Bus hält.|Wir ste-hen im Stau.|Das Ta-xi ist gelb.|Ich schnal-le mich an.',
+  ),
+  Thema(
+    'feuerwehr',
+    'Feuerwehr',
+    _v,
+    'Feu-er-wehr Feu-er Was-ser Lei-ter Schlauch Helm Si-re-ne Blau-licht Lösch-zug Rauch Brand lö-schen ret-ten Ein-satz Haus mu-tig rot Ta-tü-ta-ta',
+    'Die Feu-er-wehr ist rot.|Das Feu-er ist heiß.|Ta-tü-ta-ta!|Die Lei-ter ist lang.|Das Was-ser löscht das Feu-er.|Die Si-re-ne ist laut.|Die Feu-er-wehr hilft.|Der Helm ist schwer.',
+  ),
+  Thema(
+    'polizei',
+    'Polizei',
+    _v,
+    'Po-li-zei Po-li-zist Po-li-zis-tin Au-to Blau-licht Si-re-ne Müt-ze Hund Dieb Mo-tor-rad Hub-schrau-ber Pfei-fe Am-pel Stra-ße hel-fen fan-gen U-ni-form Wa-che',
+    'Die Po-li-zei hilft.|Das Po-li-zei-au-to hat Blau-licht.|Die Po-li-zis-tin ist mu-tig.|Der Hund hilft der Po-li-zei.|Der Dieb rennt.|Die Po-li-zei fängt den Dieb.|Die Si-re-ne ist laut.|Der Hub-schrau-ber fliegt.',
+  ),
+  Thema(
+    'baustelle',
+    'Baustelle',
+    _v,
+    'Bag-ger Kran Sand Stein Zie-gel Mau-er Helm Last-wa-gen Wal-ze Schau-fel Ei-mer Lei-ter Mör-tel Bau-ar-bei-ter Loch Bau-stel-le bau-en gra-ben laut',
+    'Der Bag-ger gräbt.|Der Kran ist hoch.|Im Ei-mer ist Sand.|Die Mau-er ist aus Stein.|Der Last-wa-gen bringt Sand.|Die Bau-ar-bei-ter tra-gen Hel-me.|Das Loch ist tief.|Auf der Bau-stel-le ist es laut.',
+  ),
+  Thema(
+    'zuege',
+    'Züge',
+    _v,
+    'Zug Lok Wa-gen Gleis Schie-ne Bahn-hof Tun-nel Brü-cke Ti-cket Schaff-ner Pfiff Dampf Lo-ko-mo-ti-ve Ei-sen-bahn Bahn-steig fah-ren hal-ten Ab-teil Fens-ter',
+    'Der Zug fährt.|Die Lok pfeift.|Der Zug fährt durch den Tun-nel.|Wir war-ten am Bahn-steig.|Der Zug hat vie-le Wa-gen.|Der Schaff-ner hat ei-ne Müt-ze.|Ich schau aus dem Fens-ter.|Die Ei-sen-bahn ist lang.',
+  ),
+  Thema(
+    'flugzeuge',
+    'Flugzeuge',
+    _v,
+    'Flug-zeug Pi-lot Pi-lo-tin Flü-gel Wol-ke Him-mel Flug-ha-fen Kof-fer Start Lan-dung Turm Mo-tor flie-gen star-ten lan-den Hub-schrau-ber Bal-lon Rei-se Fens-ter Gurt',
+    'Das Flug-zeug fliegt.|Die Pi-lo-tin lenkt.|Das Flug-zeug ist in den Wol-ken.|Wir flie-gen in den Ur-laub.|Der Kof-fer ist schwer.|Das Flug-zeug lan-det.|Der Bal-lon ist bunt.|Der Him-mel ist blau.',
+  ),
+  Thema(
+    'schiffe',
+    'Schiffe und Boote',
+    _v,
+    'Schiff Boot Se-gel An-ker Ha-fen Meer See Wel-le Ru-der Mast Ka-pi-tän Fäh-re Ka-nu Floß Leucht-turm Mö-we Netz ru-dern schwim-men',
+    'Das Boot ist im See.|Das Schiff hat ein Se-gel.|Der An-ker ist schwer.|Wir ru-dern.|Das Schiff ist im Ha-fen.|Der Leucht-turm leuch-tet.|Die Mö-we sitzt am Mast.|Die Fäh-re fährt ü-ber den See.',
+  ),
+  Thema(
+    'traktor',
+    'Traktoren und Landmaschinen',
+    _v,
+    'Trak-tor Feld Heu Stroh An-hän-ger Mäh-dre-scher Pflug Bau-er Bäu-e-rin Rei-fen Mo-tor A-cker Korn Wei-zen Hof Bal-len Ern-te grün laut',
+    'Der Trak-tor ist grün.|Der Bau-er fährt Trak-tor.|Auf dem Feld ist Heu.|Der Mäh-dre-scher ern-tet.|Der Trak-tor zieht den An-hän-ger.|Die Rei-fen sind groß.|Der Mo-tor ist laut.|Die Bal-len sind rund.',
+  ),
+];

@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_print
 // Erzeugt Beispielblätter ohne App:
-//   dart run tool/lesen.dart saetze a,e,i,o,u,l,s,m,r blatt.pdf [ohne,...]
+//   [THEMA=frozen] dart run tool/lesen.dart saetze a,e,i,o,u,l,s,m,r blatt.pdf [ohne,...]
 //   dart run tool/lesen.dart luecken a,e,i,o,u,l,s,m,r blatt.pdf [ohne,...]
 //   dart run tool/lesen.dart linien - blatt.pdf
 import 'dart:io';
@@ -10,6 +10,7 @@ import 'package:lernapp/generator/inhalt.dart';
 import 'package:lernapp/generator/luecken.dart';
 import 'package:lernapp/generator/saetze.dart';
 import 'package:lernapp/generator/schreiben.dart';
+import 'package:lernapp/generator/themen/themen.dart';
 
 Future<void> main(List<String> args) async {
   ByteData schrift(String n) => ByteData.sublistView(File('assets/fonts/$n').readAsBytesSync());
@@ -19,7 +20,8 @@ Future<void> main(List<String> args) async {
   final Uint8List pdf;
   switch (args[0]) {
     case 'saetze':
-      final inhalt = erzeugeSatzblatt(buchstaben, ohne: ohne, seed: 7);
+      final thema = themaMitId(Platform.environment['THEMA']);
+      final inhalt = erzeugeSatzblatt(buchstaben, ohne: ohne, thema: thema, seed: 7);
       for (final r in inhalt.woerter) {
         print(r.join('  '));
       }

@@ -22,6 +22,7 @@ class Profil {
     List<String>? ziffern,
     this.zahlenraum = zahlenraumMin,
     List<Rechenart>? rechenarten,
+    this.thema,
   }) : buchstaben = buchstaben ?? [],
        ohne = ohne ?? [],
        ziffern = ziffern ?? [...alleZiffern],
@@ -39,6 +40,7 @@ class Profil {
     rechenarten: j['rechenarten'] == null
         ? null
         : [for (final n in j['rechenarten'] as List) ?Rechenart.values.asNameMap()[n]],
+    thema: j['thema'] as String?,
   );
 
   final String id;
@@ -65,6 +67,9 @@ class Profil {
   int zahlenraum;
   List<Rechenart> rechenarten;
 
+  /// Id des Themas für „Wörter und Sätze“ (null = kein Thema).
+  String? thema;
+
   Map<String, dynamic> toJson() => {
     'id': id,
     'name': name,
@@ -75,6 +80,7 @@ class Profil {
     'ziffern': ziffern,
     'zahlenraum': zahlenraum,
     'rechenarten': [for (final r in rechenarten) r.name],
+    'thema': ?thema,
   };
 }
 

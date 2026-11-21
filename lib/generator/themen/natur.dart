@@ -1,0 +1,148 @@
+import 'themen.dart';
+
+const _n = 'Natur und Jahreszeiten';
+const _j = 'Feste';
+
+const themenNatur = [
+  Thema(
+    'fruehling',
+    'Frühling',
+    _n,
+    'Früh-ling Blu-me Blu-men Tul-pe Nar-zis-se Schnee-glöck-chen Gras Son-ne Re-gen Vo-gel Nest Ei Bie-ne Knos-pe Blü-te Baum Wie-se warm grün Mai März Os-tern',
+    'Es ist Mai.|Die Son-ne scheint.|Die Blu-men blü-hen.|Im Nest sind Ei-er.|Die Bie-ne summt.|Die Wie-se ist grün.|Der Vo-gel singt.|Es ist Früh-ling.|Die Tul-pe ist rot.',
+  ),
+  Thema(
+    'sommer',
+    'Sommer',
+    _n,
+    'Som-mer Son-ne Eis See Meer Sand Strand Ba-de-ho-se Hut Müt-ze Son-nen-cre-me Gras Wie-se heiß warm ba-den schwim-men Fe-ri-en Pick-nick Me-lo-ne Zelt Ball',
+    'Ich es-se ein Eis.|Wir ba-den im See.|Die Son-ne ist heiß.|Es ist Som-mer.|Im Sand ist ei-ne Mu-schel.|Die Me-lo-ne ist rot.|Wir ma-chen ein Pick-nick.|Ich ha-be ei-nen Hut.|Es sind Fe-ri-en!',
+  ),
+  Thema(
+    'herbst',
+    'Herbst',
+    _n,
+    'Herbst Blatt Blät-ter Laub Wind Dra-chen Kas-ta-nie Ei-chel Pilz Ap-fel Bir-ne Kür-bis Ne-bel Re-gen Stie-fel Schirm bunt rot gelb Ern-te I-gel',
+    'Die Blät-ter sind bunt.|Der Wind weht.|Der Dra-chen fliegt.|Ich sam-mle Kas-ta-ni-en.|Der I-gel sucht Laub.|Der Kür-bis ist o-ran-ge.|Es ist Herbst.|Der Ap-fel ist reif.|Es reg-net.',
+  ),
+  Thema(
+    'winter',
+    'Winter',
+    _n,
+    'Win-ter Schnee Eis Schnee-mann Schlit-ten Müt-ze Schal Hand-schuh Ski Flo-cke kalt Frost Eis-zap-fen O-fen Tee Ka-ka-o Schnee-ball ro-deln',
+    'Es schneit.|Der Schnee ist weiß.|Wir bau-en ei-nen Schnee-mann.|Ich fah-re Schlit-ten.|Das Eis ist kalt.|Ich tra-ge ei-ne Müt-ze.|Der Tee ist warm.|Es ist Win-ter.',
+  ),
+  Thema(
+    'wetter',
+    'Wetter',
+    _n,
+    'Wet-ter Son-ne Re-gen Wol-ke Wol-ken Wind Sturm Blitz Don-ner Ne-bel Schnee Ha-gel Re-gen-bo-gen Schirm warm kalt nass Pfüt-ze Ge-wit-ter Tem-pe-ra-tur',
+    'Die Son-ne scheint.|Es reg-net.|Der Wind ist stark.|Es don-nert.|Am Him-mel ist ein Re-gen-bo-gen.|Ich neh-me den Schirm.|Die Wol-ke ist grau.|Es ist nass.',
+  ),
+  Thema(
+    'garten',
+    'Garten',
+    _n,
+    'Gar-ten Beet Blu-me Ro-se Ra-sen Gras Baum Strauch Wurm Schne-cke Gieß-kan-ne Schau-fel Sa-men Erd-bee-re To-ma-te Ka-rot-te Sa-lat Zaun Bank gie-ßen pflan-zen',
+    'Im Gar-ten ist ei-ne Ro-se.|Ich gie-ße die Blu-men.|Der Wurm ist in der Er-de.|Die Schne-cke ist lang-sam.|Die To-ma-te ist rot.|Wir pflan-zen Sa-men.|Die Erd-bee-re ist süß.|Der Ra-sen ist grün.',
+  ),
+  Thema(
+    'baeume',
+    'Bäume und Wald',
+    _n,
+    'Baum Bäu-me Ast Äs-te Blatt Laub Moos Stamm Wur-zel Rin-de Tan-ne Ei-che Bu-che Lin-de Ul-me Er-le Na-del Zap-fen Wald Holz Specht',
+    'Der Baum ist alt.|Im Moos ist ein Pilz.|Die Tan-ne hat Na-deln.|Der Ast ist lang.|Die Ei-che ist groß.|Im Wald ist es kühl.|Der Specht klopft am Stamm.|Die Rin-de ist rau.',
+  ),
+  Thema(
+    'berge',
+    'Berge',
+    _n,
+    'Berg Ber-ge Gip-fel Hüt-te Alm Fels Stein Weg Pfad Ruck-sack Schuh Kreuz Wie-se Kuh Schnee See Seil wan-dern klet-tern hoch Aus-sicht',
+    'Der Berg ist hoch.|Wir wan-dern.|Auf dem Gip-fel ist ein Kreuz.|Die Hüt-te ist aus Holz.|Im Ruck-sack ist Was-ser.|Die Kuh ist auf der Alm.|Der See ist klar.|Wir klet-tern.',
+  ),
+  Thema(
+    'fluss',
+    'Wasser und Fluss',
+    _n,
+    'Was-ser Fluss Bach See Teich Brü-cke Stein U-fer Fisch En-te Boot Wel-le Damm Bi-ber Kie-sel nass rau-schen flie-ßen Müh-le',
+    'Der Fluss ist lang.|Das Was-ser ist kalt.|Die En-te schwimmt im Bach.|Ich wer-fe ei-nen Stein.|Der Bi-ber baut ei-nen Damm.|Wir ste-hen auf der Brü-cke.|Der Bach rauscht.|Der See ist tief.',
+  ),
+  Thema(
+    'blumen',
+    'Blumen',
+    _n,
+    'Blu-me Blu-men Ro-se Tul-pe Li-lie Mar-ge-ri-te Lö-wen-zahn Son-nen-blu-me Veil-chen Blü-te Stiel Blatt Knos-pe Strauß Va-se duf-ten rot gelb gie-ßen Bie-ne',
+    'Die Ro-se ist rot.|Die Tul-pe ist gelb.|Die Li-lie ist weiß.|Die Blu-me duf-tet.|Ich pflü-cke ei-nen Strauß.|Die Bie-ne sitzt auf der Blü-te.|Die Son-nen-blu-me ist groß.|Die Blu-men sind in der Va-se.',
+  ),
+  Thema(
+    'steine',
+    'Steine und Muscheln',
+    _n,
+    'Stein Stei-ne Mu-schel Mu-scheln Kie-sel Fels Sand Strand Meer Kris-tall Schatz Glanz sam-meln Kis-te Do-se rund glatt bunt Lu-pe',
+    'Ich sam-mle Stei-ne.|Die Mu-schel ist im Sand.|Der Stein ist rund.|Der Kie-sel ist glatt.|Der Kris-tall glänzt.|In der Kis-te ist ein Schatz.|Ich schau mit der Lu-pe.|Die Mu-scheln sind bunt.',
+  ),
+  Thema(
+    'nacht',
+    'Nacht und Sterne',
+    _n,
+    'Nacht Mond Stern Ster-ne Him-mel dun-kel Bett Pols-ter Kis-sen De-cke Traum träu-men schla-fen Eu-le Lam-pe Licht Ted-dy Schlaf-an-zug',
+    'Es ist Nacht.|Der Mond ist rund.|Die Ster-ne leuch-ten.|Ich lie-ge im Bett.|Der Ted-dy schläft mit.|Gu-te Nacht!|Ich träu-me schön.|Die Eu-le ist wach.',
+  ),
+  // Feste
+  Thema(
+    'geburtstag',
+    'Geburtstag',
+    _j,
+    'Ge-burts-tag Ku-chen Tor-te Ker-ze Ker-zen Ge-schenk Par-ty Fest Gäs-te Bal-lon Lied Spiel Ein-la-dung Kro-ne Sah-ne Eis fei-ern bla-sen',
+    'Ich ha-be Ge-burts-tag.|Der Ku-chen ist süß.|Auf der Tor-te sind Ker-zen.|Ich bla-se die Ker-zen aus.|Ich be-kom-me ein Ge-schenk.|Wir sin-gen ein Lied.|Der Bal-lon ist rot.|Al-le fei-ern mit.',
+  ),
+  Thema(
+    'weihnachten',
+    'Weihnachten',
+    _j,
+    'Weih-nach-ten Christ-kind Christ-baum Baum Stern Ker-ze Kek-se Ge-schenk Glo-cke Lied Schnee Ad-vent Kranz Ku-gel Lich-ter Krip-pe En-gel Zimt Tan-ne',
+    'Es ist Weih-nach-ten.|Der Baum hat Ku-geln.|Auf dem Baum ist ein Stern.|Wir ba-cken Kek-se.|Das Christ-kind kommt.|Die Ker-zen leuch-ten.|Wir sin-gen ein Lied.|Un-ter dem Baum sind Ge-schen-ke.',
+  ),
+  Thema(
+    'ostern',
+    'Ostern',
+    _j,
+    'Os-tern Os-ter-ha-se Ha-se Ei Ei-er Nest Korb Gras Far-be bunt su-chen ma-len Scho-ko-la-de Lamm Kü-ken Früh-ling Blu-me Strauch Os-ter-nest',
+    'Es ist Os-tern.|Der Os-ter-ha-se kommt.|Wir ma-len Ei-er an.|Im Nest sind Ei-er.|Ich su-che das Os-ter-nest.|Die Ei-er sind bunt.|Der Ha-se ist aus Scho-ko-la-de.|Das Kü-ken ist gelb.',
+  ),
+  Thema(
+    'nikolaus',
+    'Nikolaus und Krampus',
+    _j,
+    'Ni-ko-laus Kram-pus Sack Stie-fel Ru-te Nuss Nüs-se Man-da-ri-ne Ap-fel Scho-ko-la-de Bart Mi-tra Stab Ket-te Glo-cke De-zem-ber Ge-dicht lieb brav',
+    'Der Ni-ko-laus kommt.|Der Ni-ko-laus hat ei-nen Bart.|Im Sack sind Nüs-se.|Ich stel-le den Stie-fel raus.|Der Kram-pus hat ei-ne Ket-te.|Ich sa-ge ein Ge-dicht auf.|Im Stie-fel ist ei-ne Man-da-ri-ne.|Ich war brav.',
+  ),
+  Thema(
+    'fasching',
+    'Fasching',
+    _j,
+    'Fa-sching Mas-ke Kos-tüm Krap-fen Kon-fet-ti Clown Prin-zes-sin Pi-rat Hut Schmin-ke Par-ty Mu-sik tan-zen lus-tig bunt Luft-schlan-ge Zug Kro-ne',
+    'Es ist Fa-sching.|Ich ha-be ei-ne Mas-ke.|Der Krap-fen ist süß.|Ich bin ein Pi-rat.|Ma-ra ist ei-ne Prin-zes-sin.|Das Kon-fet-ti ist bunt.|Wir tan-zen.|Der Clown ist lus-tig.',
+  ),
+  Thema(
+    'martin',
+    'Martinsfest und Laternen',
+    _j,
+    'Mar-tin La-ter-ne La-ter-nen Licht Ker-ze Lied Mond Ster-ne Gans Man-tel Pferd tei-len sin-gen dun-kel Um-zug Kip-ferl Son-ne Mond-la-ter-ne',
+    'Ich ha-be ei-ne La-ter-ne.|Die La-ter-ne leuch-tet.|Wir sin-gen ein Lied.|Mar-tin teilt den Man-tel.|Mar-tin rei-tet ein Pferd.|Es ist dun-kel.|Wir ge-hen im Um-zug.|Mei-ne La-ter-ne ist ein Mond.',
+  ),
+  Thema(
+    'halloween',
+    'Halloween',
+    _j,
+    'Hal-lo-ween Kür-bis He-xe Ge-spenst Fle-der-maus Spin-ne Netz Kat-ze Be-sen Mas-ke Kos-tüm Sü-ßig-kei-ten Nacht Mond gru-se-lig o-ran-ge schwarz Ker-ze',
+    'Der Kür-bis ist o-ran-ge.|Die He-xe hat ei-nen Be-sen.|Das Ge-spenst sagt hu-hu.|Im Kür-bis ist ei-ne Ker-ze.|Die Spin-ne hat ein Netz.|Die Kat-ze ist schwarz.|Ich ha-be ein Kos-tüm.|Es ist gru-se-lig.',
+  ),
+  Thema(
+    'ferien',
+    'Ferien und Urlaub',
+    _j,
+    'Fe-ri-en Ur-laub Kof-fer Strand Meer See Zelt Ho-tel Au-to Zug Flug-zeug Son-ne Eis Sand Mu-schel Kar-te Rei-se Ruck-sack Ber-ge ba-den',
+    'Es sind Fe-ri-en.|Wir fah-ren ans Meer.|Der Kof-fer ist voll.|Wir schla-fen im Zelt.|Ich es-se ein Eis.|Am Strand ist Sand.|Wir fah-ren mit dem Zug.|Der Ur-laub ist toll.',
+  ),
+];

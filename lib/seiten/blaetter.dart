@@ -9,6 +9,7 @@ import '../generator/pdf.dart';
 import '../generator/rechnen.dart';
 import '../generator/saetze.dart';
 import '../generator/schreiben.dart';
+import '../generator/themen/themen.dart';
 import 'profile.dart';
 import 'vorschau.dart';
 
@@ -609,7 +610,12 @@ class _NeuesLeseblattState extends State<_NeuesLeseblatt> with _Erstellen {
     final regeln = AusschlussRegeln(p.ohne, frei: p.freiOhne);
     final pdf = switch (widget.art) {
       BlattArt.saetze => await erstelleSatzPdf(
-        erzeugeSatzblatt(p.buchstaben, ohne: p.ohne, freiOhne: p.freiOhne),
+        erzeugeSatzblatt(
+          p.buchstaben,
+          ohne: p.ohne,
+          freiOhne: p.freiOhne,
+          thema: themaMitId(p.thema),
+        ),
         schrift,
         fett,
       ),
@@ -632,7 +638,20 @@ class _NeuesLeseblattState extends State<_NeuesLeseblatt> with _Erstellen {
       pdf,
       buchstaben: sortiereBuchstaben(p.buchstaben),
       ohne: regeln.beschreibungen,
+      info: widget.art == BlattArt.saetze && themaMitId(p.thema) != null
+          ? 'Thema: ${themaMitId(p.thema)!.name}'
+          : null,
     );
+  }
+
+  Future<void> _themaWaehlen() async {
+    final gewaehlt = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (_) => _ThemenWahl(aktuell: p.thema),
+    );
+    if (gewaehlt != null) _aendern(() => p.thema = gewaehlt.isEmpty ? null : gewaehlt);
   }
 
   /// Hinweis unter der Auswahl und ob das Blatt erstellt werden kann.
@@ -646,9 +665,14 @@ class _NeuesLeseblattState extends State<_NeuesLeseblatt> with _Erstellen {
     switch (widget.art) {
       case BlattArt.saetze:
         final saetze = passendeSaetze(erlaubt, regeln).length;
+        final thema = themaMitId(p.thema);
+        final ausThema = thema == null ? null : themaPassend(thema, erlaubt, regeln);
         return (
-          'Passende Wörter: ${woerter.length}, passende Sätze: $saetze'
-              '${saetze < satzblattSaetzeMax ? ' (mit mehr Buchstaben, z. B. N und T, gibt es viel mehr Sätze)' : ''}',
+          ausThema == null
+              ? 'Passende Wörter: ${woerter.length}, passende Sätze: $saetze'
+                    '${saetze < satzblattSaetzeMax ? ' (mit mehr Buchstaben, z. B. N und T, gibt es viel mehr Sätze)' : ''}'
+              : 'Zum Thema passen ${ausThema.woerter.length} Wörter und '
+                    '${ausThema.saetze.length} Sätze, der Rest kommt aus dem Grundwortschatz.',
           woerter.isNotEmpty || saetze > 0,
         );
       case BlattArt.luecken:
@@ -687,6 +711,21 @@ class _NeuesLeseblattState extends State<_NeuesLeseblatt> with _Erstellen {
                 auswahl: p.buchstaben,
                 aendern: (neu) => _aendern(() => p.buchstaben = neu),
               ),
+              if (widget.art == BlattArt.saetze) ...[
+                const Divider(height: 32),
+                Text('Thema', style: text.titleMedium),
+                const SizedBox(height: 4),
+                const Text(
+                  'Wörter und Sätze kommen dann möglichst aus diesem Thema '
+                  '(je mehr Buchstaben, desto mehr).',
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  icon: const Icon(Icons.category_outlined),
+                  label: Text(themaMitId(p.thema)?.name ?? 'Kein Thema'),
+                  onPressed: _themaWaehlen,
+                ),
+              ],
               const Divider(height: 32),
               Text('Was soll noch nicht vorkommen?', style: text.titleMedium),
               const SizedBox(height: 4),
@@ -732,6 +771,80 @@ class _NeuesLeseblattState extends State<_NeuesLeseblatt> with _Erstellen {
           onPressed: bereit ? () => erstellen(widget.daten, _speichern) : null,
         ),
       ],
+    );
+  }
+}
+
+/// Liste aller Themen, nach Bereichen gruppiert, mit Suche.
+/// Gibt die Id zurück ('' = kein Thema).
+class _ThemenWahl extends StatefulWidget {
+  const _ThemenWahl({this.aktuell});
+
+  final String? aktuell;
+
+  @override
+  State<_ThemenWahl> createState() => _ThemenWahlState();
+}
+
+class _ThemenWahlState extends State<_ThemenWahl> {
+  var _suche = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+    final treffer = alleThemen
+        .where((t) => t.name.toLowerCase().contains(_suche.toLowerCase()))
+        .toList();
+    return DraggableScrollableSheet(
+      expand: false,
+      initialChildSize: 0.85,
+      builder: (context, scroll) => Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: TextField(
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.search),
+                hintText: 'Thema suchen, z. B. Frozen',
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (wert) => setState(() => _suche = wert),
+            ),
+          ),
+          Expanded(
+            child: ListView(
+              controller: scroll,
+              children: [
+                if (_suche.isEmpty)
+                  ListTile(
+                    leading: const Icon(Icons.block),
+                    title: const Text('Kein Thema'),
+                    selected: widget.aktuell == null,
+                    onTap: () => Navigator.of(context).pop(''),
+                  ),
+                for (final bereich in {for (final t in treffer) t.bereich}) ...[
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+                    child: Text(bereich, style: text.labelLarge),
+                  ),
+                  for (final t in treffer.where((t) => t.bereich == bereich))
+                    ListTile(
+                      title: Text(t.name),
+                      selected: t.id == widget.aktuell,
+                      trailing: t.id == widget.aktuell ? const Icon(Icons.check) : null,
+                      onTap: () => Navigator.of(context).pop(t.id),
+                    ),
+                ],
+                if (treffer.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.all(24),
+                    child: Text('Kein passendes Thema gefunden.'),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
